@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # OUR APPS
-    'ryhom.accounts',
+    'ryhom.accounts.apps.AccountsConfig',
 
     # OTHER
     'debug_toolbar',
@@ -59,6 +59,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # For django debug toolbar
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -97,8 +100,20 @@ DATABASES = {
 }
 
 
+# Our custom user model (path = ryhom/accounts/models.py).
+AUTH_USER_MODEL = 'accounts.UserProfile'
+
+AUTHENTICATION_BACKENDS = [
+    # Our custom authentication backend...
+    'ryhom.accounts.backends.EmailUsernameAuthBackend',
+
+    # Fallback to default authentication backend if first fails...
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
