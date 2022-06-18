@@ -44,12 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # OUR APPS
+    # OUR OWN APPS...
+    'ryhom.layout.apps.LayoutConfig',
     'ryhom.accounts.apps.AccountsConfig',
-
-    # OTHER
-    'debug_toolbar',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -59,17 +58,43 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # For django debug toolbar
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+
+#-------------------------------------------------------------------------
+# 'django_debug_toolbar' --> CUSTOM SETTINGS TO MAKE IT SHOW UP...
+if DEBUG:
+    MIDDLEWARE += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+
+    INSTALLED_APPS += [
+        'debug_toolbar.apps.DebugToolbarConfig',
+    ]
+
+    INTERNAL_IPS = ['127.0.0.1']
+
+    # THIS IS THE MAIN REASON WHY THE DJANGO DEBUG TOOLBAR ISN'T SHOWING UP!
+    import mimetypes
+    mimetypes.add_type("application/javascript", ".js", True)
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
+
+    mimetypes
+    mimetypes.add_type("application/javascript", ".js", True)
+#-------------------------------------------------------------------------
+
 
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'ryhom', 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,6 +128,7 @@ DATABASES = {
 # Our custom user model (path = ryhom/accounts/models.py).
 AUTH_USER_MODEL = 'accounts.UserProfile'
 
+
 AUTHENTICATION_BACKENDS = [
     # Our custom authentication backend...
     'ryhom.accounts.backends.EmailUsernameAuthBackend',
@@ -110,6 +136,7 @@ AUTHENTICATION_BACKENDS = [
     # Fallback to default authentication backend if first fails...
     'django.contrib.auth.backends.ModelBackend',
 ]
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -147,6 +174,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+#STATIC_ROOT  = os.path.join(BASE_DIR, 'ryhom', 'staticfiles')
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'ryhom', 'media')
+
+MEDIA_URL = '/media/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
