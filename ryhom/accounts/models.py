@@ -28,10 +28,9 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
         max_length=25,
         choices=Gender.choices,
         default=Gender.NO_RESPONSE)
-    # birthday = models.DateField()
+    birthdate = models.DateField(null=True, blank=True)
     bio = models.CharField(max_length=160, blank=True)
-    # location = pip install django-location-field
-    avatar = models.ImageField(blank=True)
+    profile_image = models.ImageField(blank=True, upload_to='profile-images/')
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -40,7 +39,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'name'] # username/pass required by default!
+    REQUIRED_FIELDS = ['username', 'name']
 
     class Meta:
         verbose_name = 'Profile'
@@ -50,22 +49,25 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     # def get_absolute_url(self):
     #     return reverse('user-profile', args=[self.slug])
 
-    # EITHER ONE OF THESE!
+    # EITHER OF THESE!
 
     # def get_absolute_url(self):
     #     return reverse("accounts:detail", kwargs={"slug": self.slug})
 
 
     def save(self, *args, **kwargs):
+        """Slugify the user's username."""
         self.slug = slugify(self.username)
         super(UserProfile, self).save(*args, **kwargs)
 
 
     def get_full_name(self):
+        """Get user's full name."""
         return self.name
 
 
     def get_short_name(self):
+        """Only get user's first name'"""
         return self.name.split()[0]
 
 
