@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # OUR OWN APPS...
+    'ryhom.core.apps.CoreConfig',
     'ryhom.layout.apps.LayoutConfig',
     'ryhom.accounts.apps.AccountsConfig',
 ]
@@ -129,15 +130,6 @@ DATABASES = {
 AUTH_USER_MODEL = 'accounts.UserProfile'
 
 
-AUTHENTICATION_BACKENDS = [
-    # Our custom authentication backend...
-    'ryhom.accounts.backends.EmailUsernameAuthBackend',
-
-    # Fallback to default authentication backend if first fails...
-    'django.contrib.auth.backends.ModelBackend',
-]
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -158,6 +150,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+LOGIN_URL = 'auth/login/'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -168,6 +166,23 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+
+#---------------------------------------------------------------------------------
+# TO CONFIGURE THE EMAIL BACKEND
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.mailtrap.io'
+
+EMAIL_PORT = 2525
+# If you use EMAIL_USE_SSL = True, set this port to --> 465
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+#------------------------------------------------------------------------------
 
 
 # Static files (CSS, JavaScript, Images)
