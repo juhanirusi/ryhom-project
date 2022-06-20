@@ -6,19 +6,20 @@ from .models import UserProfile
 class RegisterUserForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.fields['username'].widget.attrs['placeholder'] = 'Käyttäjätunnus'
-        # self.fields['username'].label = ''
 
-        self.fields['password1'].help_text = None
-        self.fields['password2'].help_text = None
+        self.fields['email'].widget.attrs['placeholder'] = 'Enter email'
+        self.fields['name'].widget.attrs['placeholder'] = 'First and last name'
+        self.fields['password1'].widget.attrs['placeholder'] = '********'
+        self.fields['password2'].widget.attrs['placeholder'] = '********'
+
+        self.fields['password1'].label = 'Pick a Password'
+        self.fields['password2'].label = 'Re-enter Password'
+
+        for fieldname in ['email', 'name', 'password1', 'password2']:
+            self.fields[fieldname].help_text = None
+
+        self.fields['password1'].help_text = 'Your password must contain at least 8 characters.'
 
     class Meta:
         model = UserProfile
-        fields = ('email', 'username', 'name', 'password1', 'password2')
-
-        labels = {
-            'username'  : 'Pick a Username',
-            'name'      : 'Full Name',
-            'password1' : 'Pick a Password',
-            'password2' : 'Enter Your Password Again',
-        }
+        fields = ('email', 'name', 'password1', 'password2')
