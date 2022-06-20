@@ -1,0 +1,27 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Log In To Your Ryhom Account{% endblock title %}
+
+{% block content %}
+
+  <h1>Log In</h1>
+  <p>Or <a href="{% url 'create-account' %}">create an account</a> to make your own posts</p>
+
+  <p>
+    {% if messages %}
+      {% for message in messages %}
+        {{ message }}
+     {% endfor %}
+    {% endif %}
+  </p>
+
+  <form action="" method="POST">
+    {% csrf_token %}
+
+    <p><input type="text" name="email" placeholder="Email"></p>
+    <p><input type="password" name="password" placeholder="Password"></p>
+
+    <button type="submit">Log In</button>
+  </form>
+
+{% endblock content %}

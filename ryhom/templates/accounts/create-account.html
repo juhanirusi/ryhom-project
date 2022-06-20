@@ -1,0 +1,27 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Create A Ryhom Account{% endblock title %}
+
+{% block content %}
+
+  <h1>Create An Account...</h1>
+
+  <p>Or <a href="{% url 'login' %}">log in</a> to your existing account</p>
+
+  <p>
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message | safe }}</p>
+      {% endfor %}
+    {% endif %}
+  </p>
+
+  <form action="" method="POST">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Create Your Account</button>
+  </form>
+
+{% endblock content %}
