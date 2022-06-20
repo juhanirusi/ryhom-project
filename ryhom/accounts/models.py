@@ -22,7 +22,6 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
         NO_RESPONSE = 'No response', 'Prefer not to respond'
 
     name = models.CharField(max_length=255)
-    username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(max_length=255, unique=True)
     gender = models.CharField(
         max_length=25,
@@ -38,6 +37,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    # Let's change the email field to be the username field
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'name']
 
@@ -55,9 +55,29 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     #     return reverse("accounts:detail", kwargs={"slug": self.slug})
 
 
+    def _create_slug(self):
+        """
+        Remove all whitespace from the name. Then check if slug
+        already exists in the database. If it does exists, add
+        a number after the slug until the database doesn't
+        contain any other matching slug.
+        """
+        name = ''.join(self.name.split())
+        slug = slugify(name)
+        unique_slug = slug
+        num = 1
+
+        while UserProfile.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+
+        return unique_slug
+
+
     def save(self, *args, **kwargs):
-        """Slugify the user's username."""
-        self.slug = slugify(self.username)
+        """Override save method to generate a URL slug"""
+        if not self.slug:
+            self.slug = self._create_slug()
         super(UserProfile, self).save(*args, **kwargs)
 
 
