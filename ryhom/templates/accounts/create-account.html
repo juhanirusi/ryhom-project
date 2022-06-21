@@ -4,7 +4,7 @@
 
 {% block content %}
 
-  <h1>Create An Account...</h1>
+  <h1>Create An Account</h1>
 
   <p>Or <a href="{% url 'login' %}">log in</a> to your existing account</p>
 
@@ -19,7 +19,16 @@
   <form action="" method="POST">
     {% csrf_token %}
 
-    {{ form.as_p }}
+    {% for error in form.non_field_errors %}
+      {{ error }}
+    {% endfor %}
+
+    {% for field in form %}
+      <p>{{ field.errors }}</p>
+      {{ field.label_tag }}
+      <p>{{ field }}</p>
+      {{ field.help_text }}
+    {% endfor %}
 
     <button type="submit">Create Your Account</button>
   </form>

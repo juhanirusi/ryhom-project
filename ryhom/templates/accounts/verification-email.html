@@ -1,5 +1,11 @@
 {% autoescape off %}
+
 Greetings, {{ user.name }},
+
 Kindly click the link below given to confirm your registration, to ryhom.com.
+
 http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+If you think it's not you, just ignore this email.
+
 {% endautoescape %}
