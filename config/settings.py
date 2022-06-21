@@ -130,6 +130,15 @@ DATABASES = {
 AUTH_USER_MODEL = 'accounts.UserProfile'
 
 
+AUTHENTICATION_BACKENDS = [
+    # Our custom authentication backend...
+    'ryhom.accounts.backends.EmailUsernameAuthBackend',
+
+    # Fallback to default authentication backend if first fails...
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -152,8 +161,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LOGIN_URL = 'auth/login/'
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+# LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'
+
+# ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/login/'
+# ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/index/'
 
 
 # Internationalization
