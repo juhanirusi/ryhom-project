@@ -11,15 +11,23 @@
     {% if messages %}
       {% for message in messages %}
         {{ message }}
-     {% endfor %}
+      {% endfor %}
     {% endif %}
   </p>
 
   <form action="" method="POST">
     {% csrf_token %}
 
-    <p><input type="text" name="email" placeholder="Email"></p>
-    <p><input type="password" name="password" placeholder="Password"></p>
+    {% for error in form.non_field_errors %}
+      {{ error }}
+    {% endfor %}
+
+    {% for field in form %}
+      <p>{{ field.errors }}</p>
+      {{ field.label_tag }}
+      <p>{{ field }}</p>
+      {{ field.help_text }}
+    {% endfor %}
 
     <button type="submit">Log In</button>
   </form>
