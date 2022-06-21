@@ -13,4 +13,4 @@ class AccountActivationTokenGenerator(PasswordResetTokenGenerator):
             text_type(user.is_active) # Activating account after URL click
         )
 
-account_activation_token = AccountActivationTokenGenerator()
+account_token_generator = AccountActivationTokenGenerator()
