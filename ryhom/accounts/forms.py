@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import UserProfile
+from .models import Account
 
 
 class RegisterUserForm(UserCreationForm):
@@ -21,5 +21,5 @@ class RegisterUserForm(UserCreationForm):
         self.fields['password1'].help_text = 'Your password must contain at least 8 characters.'
 
     class Meta:
-        model = UserProfile
+        model = Account
         fields = ('email', 'name', 'password1', 'password2')

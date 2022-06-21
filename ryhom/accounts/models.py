@@ -3,12 +3,12 @@ from django.db import models
 #from django.urls import reverse
 from django.utils.text import slugify
 
-from .managers import UserManager
+from .managers import AccountManager
 
 # Create your models here.
 
 
-class UserProfile(AbstractBaseUser, PermissionsMixin):
+class Account(AbstractBaseUser, PermissionsMixin):
     """
     Our custom user model that contains additional fields
     and a function to slugify the user's username.
@@ -22,6 +22,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
         NO_RESPONSE = 'No response', 'Prefer not to respond'
 
     name = models.CharField(max_length=255)
+    username = models.CharField(max_length=50, unique=True, blank=True)
     email = models.EmailField(max_length=255, unique=True)
     gender = models.CharField(
         max_length=25,
@@ -35,15 +36,15 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     slug = models.SlugField(default='', blank=True, null=False, unique=True)
 
-    objects = UserManager()
+    objects = AccountManager()
 
     # Let's change the email field to be the username field
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'name']
+    REQUIRED_FIELDS = ['name']
 
     class Meta:
-        verbose_name = 'Profile'
-        verbose_name_plural = 'Profiles'
+        verbose_name = 'Account'
+        verbose_name_plural = 'Accounts'
 
 
     # def get_absolute_url(self):
@@ -67,18 +68,20 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
         unique_slug = slug
         num = 1
 
-        while UserProfile.objects.filter(slug=unique_slug).exists():
-            unique_slug = '{}-{}'.format(slug, num)
+        while Account.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}{}'.format(slug, num)
             num += 1
 
         return unique_slug
 
 
     def save(self, *args, **kwargs):
-        """Override save method to generate a URL slug"""
+        """Override save method to generate a URL slug & username"""
         if not self.slug:
             self.slug = self._create_slug()
-        super(UserProfile, self).save(*args, **kwargs)
+            if not self.username:
+                self.username = self.slug
+        super(Account, self).save(*args, **kwargs)
 
 
     def get_full_name(self):

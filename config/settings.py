@@ -127,7 +127,7 @@ DATABASES = {
 
 
 # Our custom user model (path = ryhom/accounts/models.py).
-AUTH_USER_MODEL = 'accounts.UserProfile'
+AUTH_USER_MODEL = 'accounts.Account'
 
 
 AUTHENTICATION_BACKENDS = [
