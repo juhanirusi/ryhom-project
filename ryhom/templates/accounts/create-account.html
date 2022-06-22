@@ -8,25 +8,23 @@
 
   <p>Or <a href="{% url 'login' %}">log in</a> to your existing account</p>
 
-  <p>
     {% if messages %}
       {% for message in messages %}
-        <p>{{ message | safe }}</p>
+        <p>{{ message }}</p>
       {% endfor %}
     {% endif %}
-  </p>
 
   <form action="" method="POST">
     {% csrf_token %}
 
     {% for error in form.non_field_errors %}
-      {{ error }}
+      <p>{{ error }}</p>
     {% endfor %}
 
     {% for field in form %}
-      <p>{{ field.errors }}</p>
       {{ field.label_tag }}
       <p>{{ field }}</p>
+      <p>{{ field.errors }}</p>
       {{ field.help_text }}
     {% endfor %}
 
