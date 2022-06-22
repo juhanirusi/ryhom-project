@@ -1,28 +1,28 @@
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.views import LoginView
-#from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import View
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
+from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
 
-from .forms import LoginForm, RegisterForm
+from .forms import AccountSettingsForm, LoginForm, RegisterForm
 from .models import Account
 from .utils import account_token_generator
 
 
-class RegisterView(CreateView):
-
+class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
     template_name = 'accounts/create-account.html'
     form_class = RegisterForm
-    success_url =  reverse_lazy('create-account')
-
+    success_url =  reverse_lazy('create_account')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -89,59 +89,45 @@ class ActivateAccountView(View):
             )
             messages.success(request, 'Email verfied!')
             # CHANGE TO PROFILE PAGE IN THE FUTURE!
-            return redirect('index')
+            return redirect(settings.LOGIN_REDIRECT_URL)
         else:
             messages.warning(request, ('The confirmation link was invalid, \
                                 possibly because it has already been used.'))
             return redirect('index')
 
 
-# def login_user(request):
-#     if request.method == 'POST':
-#         email = request.POST['email']
-#         password = request.POST['password']
-#         user = authenticate(request, username=email, password=password)
-#         if user is not None:
-#             login(request, user)
-#             return redirect('index')
-#         else:
-#             messages.success(request, ('Antamasi salasana tai käyttäjätunnus on väärä!'))
-#             return redirect('login')
-#     else:
-#         if request.user.is_authenticated:
-#             return redirect('index')
-#         return render(request, 'accounts/login.html')
-
-
-
-
-
-
-
-class LoginView(LoginView):
+class LoginUserView(LoginView):
     template_name = 'accounts/login.html'
     authentication_form = LoginForm
-    next_page = 'index' # CHANGE IN THE FUTURE!
-    redirect_authenticated_user = 'index' # CHANGE IN THE FUTURE!
+    redirect_authenticated_user = settings.LOGIN_REDIRECT_URL # CHANGE IN THE FUTURE!
 
-    # def form_invalid(self, form):
-    #     """If the form is invalid, render the invalid form."""
-    #     return self.render_to_response(self.get_context_data(form=form))
 
-    # def get(self, request):
-    #     form = self.form_class
-    #     messages.success(request, 'JEEEEEE!')
-    #     return render(request, self.template_name, context={'form': form})
+class LogoutUserView(LogoutView):
+    def get_next_page(self):
+        next_page = super(LogoutUserView, self).get_next_page()
+        messages.add_message(
+            self.request, messages.SUCCESS,
+            "You've successfully logged out!"
+        )
+        return next_page
 
-    # def post(self, request):
-    #     form = self.form_class(request.POST)
-    #     if form.is_valid():
-    #         user = authenticate(
-    #             email=form.cleaned_data['email'],
-    #             password=form.cleaned_data['password'],
-    #         )
-    #         if user is not None:
-    #             login(request, user)
-    #             return redirect('index')
-    #     message = 'Login failed!'
-    #     return render(request, self.template_name, context={'form': form, 'message': message})
+
+class AccountSettingsView(LoginRequiredMixin, UpdateView):
+    template_name = 'accounts/account-settings.html'
+    form_class = AccountSettingsForm
+    success_url = reverse_lazy('account_settings')
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request,
+            f'Your changes were successfully saved!'
+        )
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request,
+            f'There were some errors saving your changes!'
+        )
+        return self.render_to_response(self.get_context_data(form=form))
