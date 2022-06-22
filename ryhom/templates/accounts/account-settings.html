@@ -1,0 +1,65 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Account Settings{% endblock title %}
+
+{% block content %}
+
+  <h1>Account Settings</h1>
+
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+  <form action="" method="POST">
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+
+    <h2>Profile Information</h2>
+
+    <p>{{ form.profile_image.label_tag }}</p>
+      {{ form.profile_image }}
+    <p>{{ form.profile_image.help_text }}</p>
+      {{ form.profile_image.errors }}
+
+    <p>{{ form.name.label_tag }}</p>
+      {{ form.name }}
+    <p>{{ form.name.help_text }}</p>
+      {{ form.name.errors }}
+
+    <p>{{ form.gender.label_tag }}</p>
+      {{ form.gender }}
+    <p>{{ form.gender.help_text }}</p>
+      {{ form.gender.errors }}
+
+    <p>{{ form.birthday.label_tag }}</p>
+      {{ form.birthday }}
+    <p>{{ form.birthday.help_text }}</p>
+      {{ form.birthday.errors }}
+
+    <p>{{ form.bio.label_tag }}</p>
+      {{ form.bio }}
+    <p>{{ form.bio.help_text }}</p>
+      {{ form.bio.errors }}
+
+    <h2>Account Details</h2>
+
+    <p>{{ form.username.label_tag }}</p>
+      {{ form.username }}
+    <p>{{ form.username.help_text }}</p>
+      {{ form.username.errors }}
+
+    <p>{{ form.email.label_tag }}</p>
+      {{ form.email }}
+    <p>{{ form.email.help_text }}</p>
+      {{ form.email.errors }}
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+
+{% endblock content %}
