@@ -28,7 +28,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
         max_length=25,
         choices=Gender.choices,
         default=Gender.NO_RESPONSE)
-    birthdate = models.DateField(null=True, blank=True)
+    birthday = models.DateField(null=True, blank=True)
     bio = models.CharField(max_length=160, blank=True)
     profile_image = models.ImageField(blank=True, upload_to='profile-images/')
     date_joined = models.DateTimeField(auto_now_add=True)
