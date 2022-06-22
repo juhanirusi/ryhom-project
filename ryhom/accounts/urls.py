@@ -1,10 +1,16 @@
 from django.urls import path
 
-from .views import ActivateAccountView, LoginView, RegisterView  # login_user
+from .views import (AccountSettingsView, ActivateAccountView, LoginUserView,
+                    LogoutUserView, RegisterView)
 
 urlpatterns = [
-    path('auth/create-account/', RegisterView.as_view(), name='create-account'),
-    path('auth/activate/<uidb64>/<token>/', ActivateAccountView.as_view(), name='activate'),
+    path('auth/create-account/', RegisterView.as_view(),
+        name='create_account'),
+    path('auth/activate/<uidb64>/<token>/', ActivateAccountView.as_view(),
+        name='activate'),
+    path('auth/login/', LoginUserView.as_view(), name='login'),
+    path('auth/logout/', LogoutUserView.as_view(), name='logout'),
 
-    path('auth/login/', LoginView.as_view(), name='login'),
+    path('account/settings/', AccountSettingsView.as_view(),
+        name='account_settings'),
 ]
