@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.views.generic import View
+from django.views.generic import DetailView, View
 from django.views.generic.edit import CreateView, UpdateView
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
 
@@ -20,9 +20,9 @@ from .utils import account_token_generator
 
 
 class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
-    template_name = 'accounts/create-account.html'
     form_class = RegisterForm
-    success_url =  reverse_lazy('create_account')
+    template_name = 'accounts/create-account.html'
+    success_url =  reverse_lazy('accounts:create_account')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -97,8 +97,8 @@ class ActivateAccountView(View):
 
 
 class LoginUserView(LoginView):
-    template_name = 'accounts/login.html'
     authentication_form = LoginForm
+    template_name = 'accounts/login.html'
     redirect_authenticated_user = settings.LOGIN_REDIRECT_URL # CHANGE IN THE FUTURE!
 
 
@@ -115,7 +115,7 @@ class LogoutUserView(LogoutView):
 class AccountSettingsView(LoginRequiredMixin, UpdateView):
     template_name = 'accounts/account-settings.html'
     form_class = AccountSettingsForm
-    success_url = reverse_lazy('account_settings')
+    success_url = reverse_lazy('accounts:account_settings')
 
     def get_object(self):
         return self.request.user
@@ -131,3 +131,24 @@ class AccountSettingsView(LoginRequiredMixin, UpdateView):
             f'There were some errors saving your changes!'
         )
         return self.render_to_response(self.get_context_data(form=form))
+
+
+class UserProfileView(DetailView):
+    model = Account
+    template_name = 'accounts/user-profile.html'
+
+    # def get_context_data(self, **kwargs):
+    #     # Call the base implementation first to get a context
+    #     context = super().get_context_data(**kwargs)
+    #     # Add in a QuerySet of all the books
+    #     context['book_list'] = Book.objects.all()
+    #     return context
+
+    # def get_context_data(self, **kwargs):
+    #     # Call the base implementation first to get a context
+    #     context = super().get_context_data(**kwargs)
+    #     # Add in a QuerySet of all the user posts
+    #     user_posts = MyPost.objects.filter(author=self.request.user).order_by('-cr_date')
+    #     context['user_posts'] = user_posts
+    #     context['user'] = self.request.user
+    #     return context
