@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-#from django.urls import reverse
 from django.utils.text import slugify
 
 from .managers import AccountManager
@@ -45,15 +44,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
-
-
-    # def get_absolute_url(self):
-    #     return reverse('user-profile', args=[self.slug])
-
-    # EITHER OF THESE!
-
-    # def get_absolute_url(self):
-    #     return reverse("accounts:detail", kwargs={"slug": self.slug})
 
 
     def _create_slug(self):
