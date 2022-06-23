@@ -10,8 +10,8 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', include('ryhom.layout.urls')),
-    path('', include('ryhom.accounts.urls')),
+    path('', include('ryhom.layout.urls', namespace='layout')),
+    path('', include('ryhom.accounts.urls', namespace='accounts')),
 ]
 
 if settings.DEBUG:
