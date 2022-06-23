@@ -1,14 +1,13 @@
 <div class="topnav">
-  <a class="active" href="#home">Home</a>
-  <a href="#news">News</a>
-  <a href="#contact">Contact</a>
-  <a href="#about">About</a>
+  <a class="active" href="{% url 'layout:index' %}">Home</a>
 
   {% if user.is_authenticated %}
-    <a href="{% url 'logout' %}">Log out</a>
+    <a href="{% url 'accounts:user_profile' request.user.slug %}">User Profile</a>
+    <a href="{% url 'accounts:account_settings' %}">Account Settings</a>
+    <a href="{% url 'accounts:logout' %}">Log out</a>
   {% else %}
-  <a href="{% url 'login' %}">Log In</a>
-    <a href="{% url 'create_account' %}">Create Account</a>
+  <a href="{% url 'accounts:login' %}">Log In</a>
+    <a href="{% url 'accounts:create_account' %}">Create Account</a>
   {% endif %}
 
 </div>

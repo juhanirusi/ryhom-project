@@ -5,11 +5,11 @@
 {% block content %}
 
   <h1>Log In</h1>
-  <p>Or <a href="{% url 'create_account' %}">create an account</a> to make your own posts</p>
+  <p>Or <a href="{% url 'accounts:create_account' %}">create an account</a> to make your own posts</p>
 
     {% if messages %}
       {% for message in messages %}
-        <p>{{ message }}</p>
+        <p>{{ message | safe }}</p>
       {% endfor %}
     {% endif %}
 

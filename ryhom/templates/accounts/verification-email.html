@@ -1,10 +1,12 @@
 {% autoescape off %}
 
-Greetings, {{ user.name }},
+Greetings, {{ user.name }}, You're Only A Click Away!
 
 Kindly click the link below given to confirm your registration, to ryhom.com.
 
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+(If you can't click this link, please copy and paste it into your browser's address bar.)
+
+http://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}
 
 If you think it's not you, just ignore this email.
 
