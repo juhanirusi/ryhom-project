@@ -1,0 +1,15 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}{{ account.name }} On Ryhom{% endblock title %}
+
+{% block content %}
+
+  <h1>{{ account.name }}</h1>
+  <img>{{ account.profile_image }}</img>
+  <p>Joined {{ account.date_joined | date:'M Y' }}</p>
+  {% if account.gender != 'No response' %}
+    <p>{{ account.gender }}</p>
+  {% endif %}
+  <p>{{ account.bio }}</p>
+
+{% endblock content %}
