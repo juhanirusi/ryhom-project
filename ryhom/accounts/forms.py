@@ -1,7 +1,7 @@
 from datetime import date
 
-from django.contrib.auth.forms import (AuthenticationForm, UserChangeForm,
-                                       UserCreationForm)
+from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
+                                       UserChangeForm, UserCreationForm)
 from django.core.exceptions import ValidationError
 from django.forms import SelectDateWidget, Textarea
 from django.utils.translation import gettext_lazy as _
@@ -136,3 +136,24 @@ class AccountSettingsForm(UserChangeForm):
                 'Give yourself a username that is at least 3 characters.'
             )
         return username
+
+
+class ChangePasswordForm(PasswordChangeForm):
+    """
+    Our custom form subclassing Django's PasswordChangeForm
+    that the user can use to change their password, but it
+    also includes our custom placeholders and labels.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['old_password'].widget.attrs[
+            'placeholder'] = 'Enter old password'
+        self.fields['new_password1'].widget.attrs[
+            'placeholder'] = 'Enter a new password'
+        self.fields['new_password2'].widget.attrs[
+            'placeholder'] = 'Enter new password again'
+
+        self.fields['old_password'].label = 'Your old password'
+        self.fields['new_password1'].label = 'Pick a new password'
+        self.fields['new_password2'].label = 'Re-enter new password'
