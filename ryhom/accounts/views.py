@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+#from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.shortcuts import redirect
@@ -14,7 +16,8 @@ from django.views.generic import DetailView, View
 from django.views.generic.edit import CreateView, UpdateView
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
 
-from .forms import AccountSettingsForm, LoginForm, RegisterForm
+from .forms import (AccountSettingsForm, ChangePasswordForm, LoginForm,
+                    RegisterForm)
 from .models import Account
 from .utils import account_token_generator
 
@@ -29,7 +32,7 @@ class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
         user.is_active = False # Deactivate account till it is confirmed
         user.save()
 
-        # To get the domain of the current site
+        # Get the domain of the current site
         current_site = get_current_site(self.request)
 
         mail_subject = 'Welcome To Ryhom.com! Just One More Step...'
@@ -55,7 +58,9 @@ class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
 
 
     def form_invalid(self, form):
-        error_message = 'Error creating the user, please fix the errors below...'
+        error_message = (
+            'Error creating the user, please fix the errors below...'
+        )
         messages.error(self.request, error_message)
         return super().form_invalid(form)
 
@@ -88,18 +93,29 @@ class ActivateAccountView(View):
                 backend
             )
             messages.success(request, 'Email verfied!')
-            # CHANGE TO PROFILE PAGE IN THE FUTURE!
             return redirect(settings.LOGIN_REDIRECT_URL)
         else:
             messages.warning(request, ('The confirmation link was invalid, \
                                 possibly because it has already been used.'))
-            return redirect('index')
+            return redirect('index') # PERHAPS SHOULD CHANGE THIS IN THE FUTURE
 
 
 class LoginUserView(LoginView):
     authentication_form = LoginForm
     template_name = 'accounts/login.html'
-    redirect_authenticated_user = settings.LOGIN_REDIRECT_URL # CHANGE IN THE FUTURE!
+    redirect_authenticated_user = settings.LOGIN_REDIRECT_URL
+
+
+@login_required
+def user_profile_redirect(request):
+    """
+    Used as a dynamic redirect to user's personal profile, because the
+    user profile URL requires a slug kwarg, hence, a custom redirect
+
+    settings.py --> LOGIN_REDIRECT_URL
+    """
+    slug = request.user.slug
+    return redirect('accounts:user_profile', slug=slug)
 
 
 class LogoutUserView(LogoutView):
@@ -152,3 +168,27 @@ class UserProfileView(DetailView):
     #     context['user_posts'] = user_posts
     #     context['user'] = self.request.user
     #     return context
+
+
+class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'accounts/change-password.html'
+    form_class = ChangePasswordForm
+    success_url = reverse_lazy('accounts:account_settings')
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request,
+            f'Your password was changed successfully!'
+        )
+        # Updating the password logs out all other sessions
+        # for the user except the current one.
+        update_session_auth_hash(self.request, form.user)
+        return super().form_valid(form)
+
+    # def form_invalid(self, form):
+    #     """If the form is invalid, render the invalid form with a message."""
+    #     messages.error(self.request,
+    #         f"We couldn't change your password, \
+    #         fix the errors below, and try again."
+    #     )
+    #     return self.render_to_response(self.get_context_data(form=form))
