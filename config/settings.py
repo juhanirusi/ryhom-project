@@ -13,10 +13,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
-# For our environment variables (.env file) --> "pip install python-dotenv"
-from dotenv import load_dotenv
-
-load_dotenv()
+# For our environment variables (.env file) --> "pip install python-decouple"
+# https://simpleisbetterthancomplex.com/2015/11/26/package-of-the-week-python-decouple.html
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,10 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG').lower() in ('true', '1', 't')
+DEBUG = config('DEBUG', default=True, cast=bool)
+
+IS_ADMIN_ENABLED = config('IS_ADMIN_ENABLED', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -117,11 +118,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': int(os.getenv('DATABASE_PORT')),
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USER'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'HOST': config('DATABASE_HOST'),
+        'PORT': config('DATABASE_PORT', cast=int),
     }
 }
 
@@ -160,7 +161,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 LOGIN_URL = '/auth/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/profile-redirect/'
 LOGOUT_REDIRECT_URL = '/auth/login/'
 
 #CSRF_FAILURE_VIEW
@@ -187,14 +188,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.mailtrap.io'
 
-EMAIL_PORT = 2525
-# If you use EMAIL_USE_SSL = True, set this port to --> 465
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
 
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 #------------------------------------------------------------------------------
 
 
