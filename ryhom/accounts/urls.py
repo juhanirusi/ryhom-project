@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import (AccountSettingsView, ActivateAccountView, LoginUserView,
-                    LogoutUserView, RegisterView, UserProfileView)
+from .views import (AccountSettingsView, ActivateAccountView,
+                    ChangePasswordView, LoginUserView, LogoutUserView,
+                    RegisterView, UserProfileView, user_profile_redirect)
 
 app_name = 'accounts'
 
@@ -36,5 +37,12 @@ urlpatterns = [
         '<slug:slug>',
         UserProfileView.as_view(),
         name='user_profile'
+    ),
+    path('profile-redirect/', user_profile_redirect),
+
+    path(
+        'account/settings/password/change/',
+        ChangePasswordView.as_view(),
+        name='change_password'
     ),
 ]
