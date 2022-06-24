@@ -62,6 +62,8 @@
   <p>{{ form.email.help_text }}</p>
   {{ form.email.errors }}
 
+  <a href="{% url 'accounts:change_password' %}" type="button">Change Password</a>
+
   <button type="submit">Save Changes</button>
 </form>
 
