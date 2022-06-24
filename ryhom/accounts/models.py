@@ -4,8 +4,6 @@ from django.utils.text import slugify
 
 from .managers import AccountManager
 
-# Create your models here.
-
 
 class Account(AbstractBaseUser, PermissionsMixin):
     """
@@ -21,14 +19,14 @@ class Account(AbstractBaseUser, PermissionsMixin):
         NO_RESPONSE = 'No response', 'Prefer not to respond'
 
     name = models.CharField(max_length=255)
-    username = models.CharField(max_length=50, unique=True, blank=True)
+    username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=255, unique=True)
     gender = models.CharField(
         max_length=25,
         choices=Gender.choices,
         default=Gender.NO_RESPONSE)
     birthday = models.DateField(null=True, blank=True)
-    bio = models.CharField(max_length=160, blank=True)
+    bio = models.CharField(max_length=160, blank=True, default='')
     profile_image = models.ImageField(blank=True, upload_to='profile-images/')
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
