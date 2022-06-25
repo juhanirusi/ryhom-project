@@ -1,9 +1,9 @@
 {% extends 'boilerplate.html' %}
 
-{% block title %}Change Your Password{% endblock title %}
+{% block title %}Change Your Email{% endblock title %}
 
 {% block content %}
-    <h1>Change Your Account Password</h1>
+    <h1>Change Your Account Email</h1>
 
     {% if messages %}
       {% for message in messages %}
@@ -15,6 +15,6 @@
         {% csrf_token %}
         {{ form.as_p }}
         <a href="{% url 'accounts:account_settings' %}">&#8592; Back to settings</a>
-        <button type="submit">Update Password</button>
+        <button type="submit">Update Email</button>
     </form>
 {% endblock content %}
