@@ -2,9 +2,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-#from django.contrib.auth.forms import PasswordChangeForm
+#from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.contrib.auth.views import (LoginView, LogoutView,
+                                       PasswordChangeView,
+                                       PasswordResetConfirmView,
+                                       PasswordResetView)
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.shortcuts import redirect
@@ -16,12 +19,13 @@ from django.views.generic import DetailView, View
 from django.views.generic.edit import CreateView, UpdateView
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
 
-from .forms import (AccountSettingsForm, ChangePasswordForm, LoginForm,
-                    RegisterForm)
+from .forms import (AccountSettingsForm, ChangeEmailForm, ChangePasswordForm,
+                    ForgotPasswordForm, LoginForm, RegisterForm)
 from .models import Account
-from .utils import account_token_generator
+from .tokens import account_token_generator
 
 
+# ADD 'try/except' FUNCTIONALITY TO MOST OF THE VIEWS TO MAKE THEM BULLETPROOF
 class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
     form_class = RegisterForm
     template_name = 'accounts/create-account.html'
@@ -36,7 +40,8 @@ class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
         current_site = get_current_site(self.request)
 
         mail_subject = 'Welcome To Ryhom.com! Just One More Step...'
-        message = render_to_string('accounts/verification-email.html', {
+        message = render_to_string(
+            'accounts/account-verification-email.html', {
             'user': user,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -49,9 +54,9 @@ class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
         )
         email.send()
 
-        success_message = f"An account has been created! \
-                We've sent a verification link to <b>{to_email}</b>. \
-                Click it to activate your account!"
+        success_message = f"An account has been created! We've sent \
+                            a verification link to <b>{to_email}</b>. \
+                            Click it to activate your account!"
 
         messages.success(self.request, success_message)
         return super().form_valid(form)
@@ -92,12 +97,12 @@ class ActivateAccountView(View):
                 user,
                 backend
             )
-            messages.success(request, 'Email verfied!')
+            messages.success(request, 'Your email address has been verfied!')
             return redirect(settings.LOGIN_REDIRECT_URL)
         else:
             messages.warning(request, ('The confirmation link was invalid, \
                                 possibly because it has already been used.'))
-            return redirect('index') # PERHAPS SHOULD CHANGE THIS IN THE FUTURE
+            return redirect(settings.LOGIN_REDIRECT_URL) # PERHAPS SHOULD CHANGE THIS IN THE FUTURE
 
 
 class LoginUserView(LoginView):
@@ -138,13 +143,14 @@ class AccountSettingsView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request,
-            f'Your changes were successfully saved!'
+            'Your changes were successfully saved!'
         )
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request,
-            f'There were some errors saving your changes!'
+                    "Unable to make the changes, \
+                    fix the errors below and try again."
         )
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -176,19 +182,65 @@ class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
     success_url = reverse_lazy('accounts:account_settings')
 
     def form_valid(self, form):
-        form.save()
         messages.success(self.request,
-            f'Your password was changed successfully!'
+            'Your password was changed successfully!'
         )
         # Updating the password logs out all other sessions
         # for the user except the current one.
         update_session_auth_hash(self.request, form.user)
         return super().form_valid(form)
 
-    # def form_invalid(self, form):
-    #     """If the form is invalid, render the invalid form with a message."""
-    #     messages.error(self.request,
-    #         f"We couldn't change your password, \
-    #         fix the errors below, and try again."
-    #     )
-    #     return self.render_to_response(self.get_context_data(form=form))
+    def form_invalid(self, form):
+        error_message = "We couldn't change your password, \
+                        fix the errors below and try again."
+
+        messages.error(self.request, error_message)
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+# KESKEN--------------------------------------------------------
+
+
+class ResetPasswordView(RedirectAuthenticatedUserMixin, PasswordResetView):
+    template_name = 'accounts/password-reset.html'
+    email_template_name = 'accounts/password-reset-email.html'
+    form_class = ForgotPasswordForm
+    #from_email = None
+    #html_email_template_name = None
+    #subject_template_name = 'registration/password_reset_subject.txt'
+    #success_url = reverse_lazy('password_reset_done')
+    #token_generator = <django.contrib.auth.tokens.PasswordResetTokenGenerator object at 0x7fc0f7867ac0>
+
+
+class ResetPasswordConfirmation(PasswordResetConfirmView):
+    template_name = 'accounts/password-reset-confirm.html'
+
+
+# KESKEN ---------------------------------------------
+
+
+class ChangeEmailView(LoginRequiredMixin, UpdateView):
+    template_name = 'accounts/change-email.html'
+    form_class = ChangeEmailForm
+    success_url = reverse_lazy('accounts:account_settings')
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        new_email = form.cleaned_data['new_email']
+        self.request.user.email = new_email
+
+        success_message = f'Changing your email was successful! \
+                            You can now login into your account \
+                            with <b>{new_email}</b>.'
+
+        messages.success(self.request, success_message)
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        error_message = "We couldn't change your email address, \
+                        fix the errors below and try again."
+
+        messages.error(self.request, error_message)
+        return self.render_to_response(self.get_context_data(form=form))
