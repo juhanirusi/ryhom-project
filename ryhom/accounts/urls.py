@@ -1,8 +1,9 @@
 from django.urls import path
 
-from .views import (AccountSettingsView, ActivateAccountView,
+from .views import (AccountSettingsView, ActivateAccountView, ChangeEmailView,
                     ChangePasswordView, LoginUserView, LogoutUserView,
-                    RegisterView, UserProfileView, user_profile_redirect)
+                    RegisterView, ResetPasswordConfirmation, ResetPasswordView,
+                    UserProfileView, user_profile_redirect)
 
 app_name = 'accounts'
 
@@ -27,6 +28,16 @@ urlpatterns = [
         LogoutUserView.as_view(),
         name='logout'
     ),
+    path(
+        'auth/password-reset/',
+        ResetPasswordView.as_view(),
+        name='password_reset'
+    ),
+    path(
+        'auth/password-reset-confirm/<uidb64>/<token>/',
+        ResetPasswordConfirmation.as_view(),
+        name='password_reset_confirm'
+    ),
 
     path(
         'account/settings/',
@@ -44,5 +55,10 @@ urlpatterns = [
         'account/settings/password/change/',
         ChangePasswordView.as_view(),
         name='change_password'
+    ),
+    path(
+        'account/settings/email/change/',
+        ChangeEmailView.as_view(),
+        name='change_email'
     ),
 ]
