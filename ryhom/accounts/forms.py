@@ -1,9 +1,11 @@
 from datetime import date
 
+from django import forms
 from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
-                                       UserChangeForm, UserCreationForm)
+                                       PasswordResetForm, UserChangeForm,
+                                       UserCreationForm)
 from django.core.exceptions import ValidationError
-from django.forms import SelectDateWidget, Textarea
+from django.forms import ModelForm, SelectDateWidget, Textarea
 from django.utils.translation import gettext_lazy as _
 
 from .models import Account
@@ -37,6 +39,15 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = Account
         fields = ('email', 'name', 'password1', 'password2')
+
+    def clean_email(self):
+        """
+        clean the email, so the database won't
+        store email's with capital letters like:
+
+        TESTUSER@EXAMPLE.COM = testuser@example.com
+        """
+        return self.cleaned_data['email'].lower()
 
 
 class LoginForm(AuthenticationForm):
@@ -96,7 +107,7 @@ class AccountSettingsForm(UserChangeForm):
 
     class Meta:
         model = Account
-        fields = ('name', 'username', 'email', 'gender',
+        fields = ('name', 'username', 'gender',
                 'birthday', 'profile_image', 'bio',
         )
 
@@ -138,6 +149,58 @@ class AccountSettingsForm(UserChangeForm):
         return username
 
 
+class ChangeEmailForm(ModelForm):
+    """
+    Our custom form subclassing Django's ModelForm with two custom
+    fields that the user can use to change their email address,
+    but it also includes our custom placeholders, labels and
+    a password field, so that only the owner of the account
+    can change their email address.
+    """
+    def __init__(self, *args, **kwargs):
+        super(ChangeEmailForm, self).__init__(*args, **kwargs)
+        self.fields['email'].disabled = True
+
+    new_email = forms.EmailField(
+        label='New email address',
+        widget=forms.EmailInput(
+            attrs={'placeholder': 'Enter new email'}
+        ),
+    )
+    password_check = forms.CharField(
+        label='Your password',
+        widget=forms.PasswordInput(
+            attrs={'placeholder': 'Enter your password'}
+        ),
+    )
+
+    class Meta:
+        model = Account
+        fields = ['email']
+        labels = {
+            'email': 'Your current email',
+        }
+
+    def clean_new_email(self):
+        """
+        clean the email, so the database won't
+        store email's with capital letters like:
+
+        TESTUSER@EXAMPLE.COM = testuser@example.com
+        """
+        return self.cleaned_data['new_email'].lower()
+
+    def clean_password_check(self):
+        """
+        Check that the password is correct to the
+        user changing their email address.
+        """
+        password = self.cleaned_data['password_check']
+        if not self.instance.check_password(password):
+            raise forms.ValidationError('Invalid password')
+        return password
+
+
 class ChangePasswordForm(PasswordChangeForm):
     """
     Our custom form subclassing Django's PasswordChangeForm
@@ -157,3 +220,14 @@ class ChangePasswordForm(PasswordChangeForm):
         self.fields['old_password'].label = 'Your old password'
         self.fields['new_password1'].label = 'Pick a new password'
         self.fields['new_password2'].label = 'Re-enter new password'
+
+
+class ForgotPasswordForm(PasswordResetForm):
+    """
+    ADD A DOCSTRING!
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['email'].widget.attrs[
+            'placeholder'] = 'Enter your email'
