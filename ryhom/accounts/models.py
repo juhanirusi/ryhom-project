@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.text import slugify
@@ -9,6 +11,11 @@ class Account(AbstractBaseUser, PermissionsMixin):
     """
     Our custom user model that contains additional fields
     and a function to slugify the user's username.
+
+    Our model also contains an UUID field. We'll keep Django's own
+    sequential id as primary key, but add an additional UUID field
+    to the model because it's going to be a safer method for public
+    model lookups like APIs.
     """
 
     class Gender(models.TextChoices):
@@ -18,6 +25,14 @@ class Account(AbstractBaseUser, PermissionsMixin):
         NONBINARY = 'Non-binary', 'Non-binary/non-conforming'
         NO_RESPONSE = 'No response', 'Prefer not to respond'
 
+    # Our additional UUID field for public lookups.
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        null=False,
+        unique=True,
+        db_index=True
+    )
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=255, unique=True)
@@ -69,6 +84,14 @@ class Account(AbstractBaseUser, PermissionsMixin):
             self.slug = self._create_slug()
             if not self.username:
                 self.username = self.slug
+
+        # A BUZZFEED.COM LIKE RANDOM PROFILE IMAGE...
+        # IMAGES = [ <-- ADD TO THE TOP OF THE MODEL!
+        #     'profile1.jpg', 'profile2.jpg', 'profile3.jpg', 'profile4.jpg', 'profile5.jpg',
+        #     'profile6.jpg', 'profile7.jpg', 'profile8.jpg', 'profile9.jpg', 'profile10.jpg',
+        # ]
+        # if self.image == 'default.jpg': <-- MAKE A LIST OF IMAGES
+        #     self.image = random.choice(self.IMAGES)
         super(Account, self).save(*args, **kwargs)
 
 
