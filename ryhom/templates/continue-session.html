@@ -1,0 +1,14 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Confirm Password{% endblock title %}
+
+{% block content %}
+
+  <h1>Confirm your password</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Confirm password</button>
+  </form>
+
+{% endblock %}
