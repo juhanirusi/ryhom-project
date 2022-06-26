@@ -1,31 +1,41 @@
+import socket
+from smtplib import SMTPException
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-#from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+#from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (LoginView, LogoutView,
                                        PasswordChangeView,
+                                       PasswordResetCompleteView,
                                        PasswordResetConfirmView,
+                                       PasswordResetDoneView,
                                        PasswordResetView)
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
 from django.shortcuts import redirect
-from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.decorators import method_decorator
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from django.views.generic import DetailView, View
 from django.views.generic.edit import CreateView, UpdateView
+from ryhom.core.decorators import confirm_password
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
 
 from .forms import (AccountSettingsForm, ChangeEmailForm, ChangePasswordForm,
-                    ForgotPasswordForm, LoginForm, RegisterForm)
+                    ForgotPasswordForm, LoginForm, RegisterForm,
+                    SetNewPasswordForm)
 from .models import Account
 from .tokens import account_token_generator
+from .utils import send_registration_confirm_email
+
+# A list of decorators including our custom decorator -> confirm_password
+# that requires the user to insert their password again if there's more
+# than, 30 minutes for example, from their last login if they are
+# accessing a view with this decorator.
+decorators = [login_required, confirm_password]
 
 
-# ADD 'try/except' FUNCTIONALITY TO MOST OF THE VIEWS TO MAKE THEM BULLETPROOF
 class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
     form_class = RegisterForm
     template_name = 'accounts/create-account.html'
@@ -36,29 +46,22 @@ class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
         user.is_active = False # Deactivate account till it is confirmed
         user.save()
 
-        # Get the domain of the current site
-        current_site = get_current_site(self.request)
-
-        mail_subject = 'Welcome To Ryhom.com! Just One More Step...'
-        message = render_to_string(
-            'accounts/account-verification-email.html', {
-            'user': user,
-            'domain': current_site.domain,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            'token': account_token_generator.make_token(user),
-        })
-
         to_email = form.cleaned_data['email']
-        email = EmailMessage(
-            mail_subject, message, to=[to_email]
-        )
-        email.send()
 
-        success_message = f"An account has been created! We've sent \
-                            a verification link to <b>{to_email}</b>. \
-                            Click it to activate your account!"
+        # For all possible send_mail (SMTPException) exceptions...
+        # https://docs.python.org/3/library/smtplib.html#smtplib.SMTPException
+        try:
+            send_registration_confirm_email(self, user, to_email)
+            success_message = (f"An account has been created! We've sent \
+                                a verification link to <b>{to_email}</b>. \
+                                Click it to activate your account!")
+            messages.success(self.request, success_message)
+        except (SMTPException, socket.gaierror):
+            error_message = 'There was an error connecting to the email \
+                            server, this is likely our fault. Please try \
+                            creating an account later.'
+            messages.error(self.request, error_message)
 
-        messages.success(self.request, success_message)
         return super().form_valid(form)
 
 
@@ -102,7 +105,7 @@ class ActivateAccountView(View):
         else:
             messages.warning(request, ('The confirmation link was invalid, \
                                 possibly because it has already been used.'))
-            return redirect(settings.LOGIN_REDIRECT_URL) # PERHAPS SHOULD CHANGE THIS IN THE FUTURE
+            return redirect(settings.LOGIN_URL)
 
 
 class LoginUserView(LoginView):
@@ -133,7 +136,8 @@ class LogoutUserView(LogoutView):
         return next_page
 
 
-class AccountSettingsView(LoginRequiredMixin, UpdateView):
+@method_decorator(decorators, name='dispatch')
+class AccountSettingsView(UpdateView):
     template_name = 'accounts/account-settings.html'
     form_class = AccountSettingsForm
     success_url = reverse_lazy('accounts:account_settings')
@@ -176,7 +180,8 @@ class UserProfileView(DetailView):
     #     return context
 
 
-class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
+@method_decorator(decorators, name='dispatch')
+class ChangePasswordView(PasswordChangeView):
     template_name = 'accounts/change-password.html'
     form_class = ChangePasswordForm
     success_url = reverse_lazy('accounts:account_settings')
@@ -198,28 +203,34 @@ class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-# KESKEN--------------------------------------------------------
-
+# PASSWORD RESET START ---------------------------------------------------
 
 class ResetPasswordView(RedirectAuthenticatedUserMixin, PasswordResetView):
     template_name = 'accounts/password-reset.html'
     email_template_name = 'accounts/password-reset-email.html'
     form_class = ForgotPasswordForm
-    #from_email = None
-    #html_email_template_name = None
-    #subject_template_name = 'registration/password_reset_subject.txt'
-    #success_url = reverse_lazy('password_reset_done')
-    #token_generator = <django.contrib.auth.tokens.PasswordResetTokenGenerator object at 0x7fc0f7867ac0>
+    from_email = 'noreply@ryhom.com'
+    success_url = reverse_lazy('accounts:password_reset_message')
 
 
-class ResetPasswordConfirmation(PasswordResetConfirmView):
+class ResetPasswordMessageView(PasswordResetDoneView):
+    template_name = 'accounts/password-reset-done.html'
+
+
+class ResetPasswordConfirmationView(PasswordResetConfirmView):
     template_name = 'accounts/password-reset-confirm.html'
+    form_class = SetNewPasswordForm
+    success_url = reverse_lazy('accounts:password_reset_done')
 
 
-# KESKEN ---------------------------------------------
+class ResetPasswordDoneView(PasswordResetCompleteView):
+    template_name = 'accounts/password-reset-complete.html'
+
+# PASSWORD RESET END -----------------------------------------------------
 
 
-class ChangeEmailView(LoginRequiredMixin, UpdateView):
+@method_decorator(decorators, name='dispatch')
+class ChangeEmailView(UpdateView):
     template_name = 'accounts/change-email.html'
     form_class = ChangeEmailForm
     success_url = reverse_lazy('accounts:account_settings')
