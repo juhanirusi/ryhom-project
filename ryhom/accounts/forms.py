@@ -2,8 +2,8 @@ from datetime import date
 
 from django import forms
 from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
-                                       PasswordResetForm, UserChangeForm,
-                                       UserCreationForm)
+                                       PasswordResetForm, SetPasswordForm,
+                                       UserChangeForm, UserCreationForm)
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, SelectDateWidget, Textarea
 from django.utils.translation import gettext_lazy as _
@@ -181,6 +181,21 @@ class ChangeEmailForm(ModelForm):
             'email': 'Your current email',
         }
 
+    def clean(self):
+        """
+        Check that the user chooses a new email address, instead of
+        just updating their email address with their old email.
+        """
+        current_email = self.cleaned_data['email']
+        new_email = self.cleaned_data['new_email']
+
+        if new_email == current_email:
+            raise ValidationError(
+                "Your new email can't be the same as your old email. \
+                Choose a different email address!"
+            )
+        return self.cleaned_data
+
     def clean_new_email(self):
         """
         clean the email, so the database won't
@@ -224,10 +239,28 @@ class ChangePasswordForm(PasswordChangeForm):
 
 class ForgotPasswordForm(PasswordResetForm):
     """
-    ADD A DOCSTRING!
+    Our customizations to the Django's PasswordResetForm,
+    where we've added a placeholder to the email field.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields['email'].widget.attrs[
             'placeholder'] = 'Enter your email'
+
+
+class SetNewPasswordForm(SetPasswordForm):
+    """
+    Our customizations to the Django's SetPasswordForm, where
+    we've added labels and placeholders to our password fields.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['new_password1'].widget.attrs[
+            'placeholder'] = 'Enter a new password'
+        self.fields['new_password2'].widget.attrs[
+            'placeholder'] = 'Enter new password again'
+
+        self.fields['new_password1'].label = 'Pick a new password'
+        self.fields['new_password2'].label = 'Re-enter new password'
