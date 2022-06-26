@@ -1,0 +1,13 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Page Not Found{% endblock title %}
+
+{% block content %}
+  <h1>Oops...</h1>
+
+  <p>Unfortunately, we can't find the page you're looking for.</p>
+
+  <p>It may have expired, or there could be a typo. Maybe you can find what you need from our homepage.</p>
+
+  <a href="{% url 'core:index' %}">Return to Ryhom.com</a>
+{% endblock content %}
