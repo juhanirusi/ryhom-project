@@ -4,6 +4,12 @@
 
 {% block content %}
 
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message | safe }}</p>
+      {% endfor %}
+    {% endif %}
+
   <h1>{{ account.name }}</h1>
   <img>{{ account.profile_image }}</img>
   <p>Joined {{ account.date_joined | date:'M Y' }}</p>

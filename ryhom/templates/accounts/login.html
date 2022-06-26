@@ -28,6 +28,8 @@
     {% endfor %}
 
     <button type="submit">Log In</button>
+
+    <p><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>
   </form>
 
 {% endblock content %}

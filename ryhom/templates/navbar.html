@@ -1,5 +1,5 @@
 <div class="topnav">
-  <a class="active" href="{% url 'layout:index' %}">Home</a>
+  <a class="active" href="{% url 'core:index' %}">Home</a>
 
   {% if user.is_authenticated %}
     <a href="{% url 'accounts:user_profile' request.user.slug %}">User Profile</a>
