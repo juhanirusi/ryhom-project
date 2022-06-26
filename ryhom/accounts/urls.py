@@ -2,8 +2,9 @@ from django.urls import path
 
 from .views import (AccountSettingsView, ActivateAccountView, ChangeEmailView,
                     ChangePasswordView, LoginUserView, LogoutUserView,
-                    RegisterView, ResetPasswordConfirmation, ResetPasswordView,
-                    UserProfileView, user_profile_redirect)
+                    RegisterView, ResetPasswordConfirmationView,
+                    ResetPasswordDoneView, ResetPasswordMessageView,
+                    ResetPasswordView, UserProfileView, user_profile_redirect)
 
 app_name = 'accounts'
 
@@ -34,9 +35,19 @@ urlpatterns = [
         name='password_reset'
     ),
     path(
+        'auth/password-reset/message/',
+        ResetPasswordMessageView.as_view(),
+        name='password_reset_message',
+    ),
+    path(
         'auth/password-reset-confirm/<uidb64>/<token>/',
-        ResetPasswordConfirmation.as_view(),
+        ResetPasswordConfirmationView.as_view(),
         name='password_reset_confirm'
+    ),
+    path(
+        'auth/password-reset/done/',
+        ResetPasswordDoneView.as_view(),
+        name='password_reset_done',
     ),
 
     path(
