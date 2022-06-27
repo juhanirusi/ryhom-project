@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     # OUR OWN APPS...
     'ryhom.core.apps.CoreConfig',
     'ryhom.accounts.apps.AccountsConfig',
+    'ryhom.tags.apps.TagsConfig',
+    'ryhom.categories.apps.CategoriesConfig',
+    'ryhom.articles.apps.ArticlesConfig',
 ]
 
 
