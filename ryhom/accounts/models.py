@@ -86,12 +86,23 @@ class Account(AbstractBaseUser, PermissionsMixin):
                 self.username = self.slug
 
         # A BUZZFEED.COM LIKE RANDOM PROFILE IMAGE...
+
         # IMAGES = [ <-- ADD TO THE TOP OF THE MODEL!
         #     'profile1.jpg', 'profile2.jpg', 'profile3.jpg', 'profile4.jpg', 'profile5.jpg',
         #     'profile6.jpg', 'profile7.jpg', 'profile8.jpg', 'profile9.jpg', 'profile10.jpg',
         # ]
         # if self.image == 'default.jpg': <-- MAKE A LIST OF IMAGES
         #     self.image = random.choice(self.IMAGES)
+
+        # RESIZE THE IMAGE TO A SPECIFIC SIZE...
+
+        # super(Account, self).save(*args, **kwargs) <-- NOT SURE IF SHOULD CALL THIS BEFORE THE IMAGE CODE?!
+        # img = Image.open(self.image.path)
+
+        # if img.height > 300 or img.width > 300:
+        #     output_size = (300, 300)
+        #     img.thumbnail(output_size)
+        #     img.save(self.image.path)
         super(Account, self).save(*args, **kwargs)
 
 
