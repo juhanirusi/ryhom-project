@@ -1,15 +1,18 @@
-# from django.db import models
-# from ryhom.core.models import BaseAbstractModel
+from django.db import models
+from ryhom.core.models import BaseAbstractModel
 
-# class Article(BaseAbstractModel):
-#     pass
 
-    # STATUS = (
-    #   (0,"Draft"),
-    #   (1,"Publish"),
-    # )
+class Article(BaseAbstractModel):
+    """Model for articles"""
 
-    #title
+    class Status(models.TextChoices):
+        FEATURED = 'Featured', 'Featured'
+
+    class Type(models.TextChoices):
+        DEFAULT = 'Default', 'Default'
+        MICRO = 'Micropost', 'Micropost (Under 300 Words)'
+
+    title = models.CharField(max_length=150)
     #summary
     #author
     #image
@@ -21,11 +24,15 @@
     #status <-- CHOICES.STATUS
     #featured <-- A SIMPLE BOOLEAN
     #likes <-- PositiveIntegerField
+    #published <-- A SIMPLE BOOLEAN
 
     # class Meta:
     #     ordering = ['-created']
     #     unique_together = ('author', 'title') <-- One author can't have multiple posts with same title
     #     objects = models.Manager() <--- ASSIGN THE DEFAULT MODEL MANAGER BEFORE OUR CUSTOM ONES!
+
+    # def total_likes(self):
+    #     return self.likes.count()
 
     # def __str__(self):
     #     return self.title
