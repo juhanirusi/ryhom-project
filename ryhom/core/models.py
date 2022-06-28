@@ -19,10 +19,10 @@ class BaseAbstractModel(models.Model):
         editable=False,
         null=False,
         unique=True,
-        db_index=True
     )
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
+        #indexes = [models.Index(fields=['uuid'])]
         abstract = True
