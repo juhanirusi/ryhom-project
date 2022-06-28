@@ -9,23 +9,25 @@ admin.site.site_title  =  "Ryhom Admin"
 admin.site.index_title  =  "Ryhom Admin Dashboard"
 
 
+@admin.action(description='Activate Account(s)')
+def make_active(modeladmin, request, queryset):
+    queryset.update(is_active = True)
+    messages.success(request, "Selected Account(s) Marked As Active!")
+
+
+@admin.action(description='Deactivate Account(s)')
+def make_inactive(modeladmin, request, queryset):
+    queryset.update(is_active = False)
+    messages.success(request, "Selected Account(s) Marked As Inactive!")
+
+
 class UserAdmin(BaseUserAdmin):
     """Define the admin page customization."""
     ordering = ['id']
     list_display = ['email', 'username', 'name', 'is_active']
     list_filter = ('is_active', 'is_superuser', 'is_staff', 'gender',)
     search_fields = ['email', 'name', 'username']
-
-
-    def make_active(modeladmin, request, queryset):
-        queryset.update(is_active = True)
-        messages.success(request, "Selected Account(s) Marked As Active!")
-
-
-    def make_inactive(modeladmin, request, queryset):
-        queryset.update(is_active = False)
-        messages.success(request, "Selected Account(s) Marked As Inactive!")
-
+    actions = [make_active, make_inactive]
 
     fieldsets = (
         (_('Account Info'), {'fields': ('email', 'username', 'slug', 'password')}),
@@ -50,8 +52,5 @@ class UserAdmin(BaseUserAdmin):
             ),
         }),
     )
-
-    admin.site.add_action(make_active, 'Activate Account(s)')
-    admin.site.add_action(make_inactive, 'Deactivate Account(s)')
 
 admin.site.register(Account, UserAdmin)
