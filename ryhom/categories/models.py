@@ -15,38 +15,47 @@ class Category(models.Model):
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name='sub_categories'
+        related_name='sub_categories',
     )
 
     class Meta:
         unique_together = ('slug', 'parent',)
+        #indexes = [models.Index(fields=['slug', 'parent'])]
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
 
-    def _generate_slug(self):
-        value = self.name
-        slug_candidate = slug_original = slugify(value)
-        for i in itertools.count(1):
-            if not Category.objects.filter(slug=slug_candidate).exists():
-                break
-            slug_candidate = '{}-{}'.format(slug_original, i)
 
-        self.slug = slug_candidate
+    # @property
+    # def children(self):
+    #     return self.category_set.all().order_by("title") <-- RESEARCH MORE OR USE A MODEL MANAGER!
+
+
+    def _generate_slug(self):
+        name = self.name
+        unique_slug = slug = slugify(name) # Same value to 2 variables
+
+        for num in itertools.count(1):
+            if not Category.objects.filter(slug=unique_slug).exists():
+                break
+            unique_slug = '{}{}'.format(slug, num)
+
+        self.slug = unique_slug
+
 
     def save(self, *args, **kwargs):
-        parent = self.parent
-        while parent is not None:
-            if parent == self:
-                raise RuntimeError("Circular references not allowed")
-            parent = parent.parent
 
         if not self.pk:
             self._generate_slug()
 
+        if self.id and self.parent and self.id == self.parent.id:
+            self.parent = None
+
         super().save(*args, **kwargs)
+
 
     # def get_absolute_url(self):
     #     return reverse("categories:category", kwargs={'slug': self.slug})
+
 
     def __str__(self):
         full_path = [self.name]
@@ -56,3 +65,58 @@ class Category(models.Model):
             k = k.parent
 
         return ' -> '.join(full_path[::-1])
+
+
+#-----------------------------------------------------------------------------
+"""
+urls.py...
+"""
+
+# url(r'^business/(?P<hierarchy>.+)/', 'directory.views.show_category')
+
+"""
+views.py...
+
+VERSION 1
+"""
+
+# def show_category(request, hierarchy):
+#     category_slugs = hierarchy.split('/')
+#     categories = []
+
+    # REPLACE WITH 'try/except' IF ALL OF THIS WORKS!
+
+#     for slug in category_slugs:
+#         if not categories:
+#             parent = None
+#         else:
+#             parent = categories[-1]
+#         category = get_object_or_404(Category, slug=slug, parent=parent)
+#         categories.append(category)
+
+
+"""
+views.py...
+
+VERSION 2 --> with breadcrumbs
+"""
+
+
+# def show_category(request,hierarchy= None):
+#     category_slug = hierarchy.split('/')
+#     category_queryset = list(Category.objects.all())
+#     all_slugs = [ x.slug for x in category_queryset ]
+#     parent = None
+#     for slug in category_slug:
+#         if slug in all_slugs:
+#             parent = get_object_or_404(Category,slug=slug,parent=parent)
+#         else:
+#             instance = get_object_or_404(Post, slug=slug)
+#             breadcrumbs_link = instance.get_cat_list()
+#             category_name = [' '.join(i.split('/')[-1].split('-')) for i in breadcrumbs_link]
+#             breadcrumbs = zip(breadcrumbs_link, category_name)
+#             return render(request, "postDetail.html", {'instance':instance,'breadcrumbs':breadcrumbs})
+
+#     return render(request,"categories.html",{'post_set':parent.post_set.all(),'sub_categories':parent.children.all()})
+
+#-----------------------------------------------------------------------------
