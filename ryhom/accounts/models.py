@@ -1,3 +1,4 @@
+import itertools
 import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -31,7 +32,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
         editable=False,
         null=False,
         unique=True,
-        db_index=True
     )
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=50, unique=True)
@@ -55,6 +55,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
     class Meta:
+        #indexes = [models.Index(fields=['uuid', 'slug'])]
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
 
@@ -67,21 +68,20 @@ class Account(AbstractBaseUser, PermissionsMixin):
         contain any other matching slug.
         """
         name = ''.join(self.name.split())
-        slug = slugify(name)
-        unique_slug = slug
-        num = 1
+        slug = unique_slug = slugify(name) # Same value to 2 variables
 
-        while Account.objects.filter(slug=unique_slug).exists():
+        for num in itertools.count(1):
+            if not Account.objects.filter(slug=unique_slug).exists():
+                break
             unique_slug = '{}{}'.format(slug, num)
-            num += 1
 
-        return unique_slug
+        self.slug = unique_slug
 
 
     def save(self, *args, **kwargs):
         """Override save method to generate a URL slug & username"""
         if not self.slug:
-            self.slug = self._create_slug()
+            self._create_slug()
             if not self.username:
                 self.username = self.slug
 
