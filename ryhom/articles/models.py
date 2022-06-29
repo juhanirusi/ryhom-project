@@ -1,26 +1,35 @@
+from django.conf import settings
 from django.db import models
+#from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel
 
 
 class Article(BaseAbstractModel):
     """Model for articles"""
 
-    class Status(models.TextChoices):
-        FEATURED = 'Featured', 'Featured'
-
     class Type(models.TextChoices):
-        DEFAULT = 'Default', 'Default'
-        MICRO = 'Micropost', 'Micropost (Under 300 Words)'
+        NO_TYPE = 'No Type', 'No Type'
+        ARTICLE = 'Article', 'Article'
+        STORY = 'Story', 'Story'
+        LISTICLE = 'List', 'List'
+        MICROPOST = 'Micropost', 'Micropost (Under 300 Words)'
+        CHECKLIST = 'Checklist', 'Checklist'
+        WHAT_IF = 'What if...', 'What If...'
+        QUESTIONS_TO_ASK = 'Questions To Ask', 'Questions To Ask'
+        MYTH_BUSTER = 'Myth-buster', 'Myth-buster'
+        LESSON_LEARNED = 'Lesson-learned', 'Lesson-learned'
+        PEOPLE_SAYING = 'What People say', 'What People say'
 
     title = models.CharField(max_length=150)
-    #summary
-    #author
+    summary = models.CharField(max_length=255)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     #image
     #content <-- CKEditor RichTextField(), RichTextUploadingField, or a simple models.TextField
     #image_credit <-- SHOW THE OWNER OF THE IMAGE
     #category <-- ManyToManyField
     #tags <-- ManyToManyField
     #slug
+    #type
     #status <-- CHOICES.STATUS
     #featured <-- A SIMPLE BOOLEAN
     #likes <-- PositiveIntegerField
