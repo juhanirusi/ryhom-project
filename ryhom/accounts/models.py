@@ -43,6 +43,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     birthday = models.DateField(null=True, blank=True)
     bio = models.CharField(max_length=160, blank=True, default='')
     profile_image = models.ImageField(blank=True, upload_to='profile-images/')
+    #background_image = models.ImageField(blank=True, upload_to='profile-background/')
+    #website = models.URLField(blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
