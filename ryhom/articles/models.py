@@ -1,18 +1,22 @@
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.db import models
-#from ryhom.categories.models import Category
+from django.utils.text import slugify
+from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel
+from ryhom.core.utils import random_string_generator
+from ryhom.tags.models import Tag
 
 
 class Article(BaseAbstractModel):
-    """Model for articles"""
+    """
+    Model for articles.
+    """
 
     class Type(models.TextChoices):
-        NO_TYPE = 'No Type', 'No Type'
         ARTICLE = 'Article', 'Article'
         STORY = 'Story', 'Story'
         LISTICLE = 'List', 'List'
-        MICROPOST = 'Micropost', 'Micropost (Under 300 Words)'
         CHECKLIST = 'Checklist', 'Checklist'
         WHAT_IF = 'What if...', 'What If...'
         QUESTIONS_TO_ASK = 'Questions To Ask', 'Questions To Ask'
@@ -22,53 +26,87 @@ class Article(BaseAbstractModel):
 
     title = models.CharField(max_length=150)
     summary = models.CharField(max_length=255)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    #image
-    #content <-- CKEditor RichTextField(), RichTextUploadingField, or a simple models.TextField
-    #image_credit <-- SHOW THE OWNER OF THE IMAGE
-    #category <-- ManyToManyField
-    #tags <-- ManyToManyField
-    #slug
-    #type
-    #status <-- CHOICES.STATUS
-    #featured <-- A SIMPLE BOOLEAN
-    #likes <-- PositiveIntegerField
-    #published <-- A SIMPLE BOOLEAN
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    image = models.ImageField(blank=True, upload_to='article-images/')
+    image_credit = models.CharField(blank=True, max_length=50)
+    content = RichTextUploadingField()
+    categories = models.ManyToManyField(Category, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+    type = models.CharField(max_length=25, choices=Type.choices, default=Type.NO_TYPE)
+    featured = models.BooleanField(default=False)
+    likes = models.PositiveIntegerField(default=0)
+    published = models.BooleanField(default=False)
+    slug = models.SlugField(default='', blank=True, null=False, unique=True)
 
-    # class Meta:
-    #     ordering = ['-created']
-    #     unique_together = ('author', 'title') <-- One author can't have multiple posts with same title
-    #     objects = models.Manager() <--- ASSIGN THE DEFAULT MODEL MANAGER BEFORE OUR CUSTOM ONES!
+    class Meta:
+        ordering = ['-created', '-modified']
+        unique_together = ('author', 'title') # 1 author can't have multiple articles with same title
+
+        # ASSIGN THE DEFAULT MODEL MANAGER BEFORE OUR CUSTOM ONES!
+        #objects = models.Manager()
 
     # def total_likes(self):
     #     return self.likes.count()
 
-    # def __str__(self):
-    #     return self.title
+    def _create_slug(self, slug=None, unique_slug=None):
+        """
+        Remove all whitespace from the name. Then check if slug
+        already exists in the database. If it does exists, add
+        a number after the slug until the database doesn't
+        contain any other matching slug.
+        """
+
+        # slug = slugify(name)
+        # unique_slug = slug
+        # num = 1
+
+        # while UserProfile.objects.filter(slug=unique_slug).exists():
+        #     unique_slug = '{}-{}'.format(slug, num)
+        #     num += 1
+
+        # return unique_slug
+
+        slug = unique_slug = slugify(self.title)
+        while Article.objects.filter(slug=unique_slug).exists():
+
+        # for num in itertools.count(1):
+        #     if not Article.objects.filter(slug=unique_slug).exists():
+        #         break
+        #     unique_slug = '{}-{}'.format(slug, num)
+
+        # self.slug = unique_slug
+            return None
 
 
-#class Comment(models.Model):
-    #post <-- Foreign Key (or OneToOneField?)
-    #author <-- Foreign Key (or OneToOneField?)
-    #title
-    #comment
-    #likes
-    #approved = models.BooleanField(default=True) --> THINK ABOUT THIS IF IT'S EVEN NECESSARY WHEN
-                                                    # THE USER NEEDS TO BE LOGGED IN IN THE FIRST PLACE!
-    #date <-- SOME DATE WHEN COMMENT WAS WRITTEN
-    #replies <-- SOMEHOW... LIKE THIS FOR EXAMPLE:
+    def save(self, *args, **kwargs):
+        """Override the save method to generate a URL slug, or check if a duplicate slug exists and generate a new one for the article"""
+        if self._state.adding is True:
+            self._create_slug()
 
-    # reply = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='replies')
 
-    # class Meta:
-    #     ordering=["-date"]
+    def __str__(self):
+        return self.title
+
+
+class Comment(BaseAbstractModel):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    comment = models.TextField() # <-- ADD A VALIDATOR TO FORM (50 to 6,000 CHARACTERS!)
+    likes = models.PositiveIntegerField(default=0)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name="replies", null=True, blank=True)
+
+    class Meta:
+        ordering=["-created"]
 
     # @property
-    # def children(self):
-    #     return Comment.objects.filter(parent=self).order_by('-created_on').all()
+    # def child_comments(self):
+    #     return Comment.objects.filter(parent=self).reverse()
 
     # @property
     # def is_parent(self):
     #     if self.parent is None:
     #         return True
     #     return False
+
+    def __str__(self):
+        return f'Comment by {self.author}'
