@@ -12,7 +12,7 @@ class Micropost(BaseAbstractModel):
         IMAGE = 'Image', 'Image'
 
     title = models.CharField(max_length=255, null=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     image = models.ImageField(blank=True, upload_to='micropost-images/')
     image_credit = models.CharField(blank=True, max_length=50)
     content = models.TextField(blank=True)
