@@ -59,10 +59,35 @@ INSTALLED_APPS = [
 ]
 
 CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'
-
-CKEDITOR_UPLOAD_PATH = '/uploads/'
-
+CKEDITOR_UPLOAD_PATH = 'uploads/'
 CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_RESTRICT_BY_USER = True
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
+
+
+CKEDITOR_CONFIGS = {
+    'custom_editor': {
+        'toolbar': 'CMS',
+        'toolbar_CMS': [
+            ['Format'],
+            ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'],
+            ['Link', 'Unlink'],
+            ['Table', 'Image'],
+            ['NumberedList', 'BulletedList'],
+            ['Outdent', 'Indent'],
+            ['SpecialChar', 'Blockquote', 'HorizontalRule'],
+            ['Maximize'],
+        ],
+        'uiColor': '#F9F9F9',
+        'format_tags': 'h1;h2;h3;p',
+        'forcePasteAsPlainText': True,
+        'toolbarCanCollapse': True,
+        'removePlugins': 'elementspath',
+        'editorplaceholder': 'Write your article…',
+        'toolbarLocation': 'bottom',
+        'tabSpaces': 4,
+    },
+}
 
 
 MIDDLEWARE = [
@@ -216,7 +241,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 STATIC_URL = 'static/'
 
-#STATIC_ROOT  = os.path.join(BASE_DIR, 'ryhom', 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'ryhom', 'staticfiles')
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'ryhom', 'media')
