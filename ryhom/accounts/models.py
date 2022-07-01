@@ -119,4 +119,5 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 
     def __str__(self):
+        """How an instance of Account is shown in admin"""
         return self.name
