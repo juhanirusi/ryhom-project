@@ -22,9 +22,7 @@ class RegisterForm(UserCreationForm):
         super().__init__(*args, **kwargs)
 
         self.fields['email'].widget.attrs['placeholder'] = 'Enter email'
-        self.fields['name'].widget.attrs[
-            'placeholder'
-        ] = 'First and last name'
+        self.fields['name'].widget.attrs['placeholder'] = 'First and last name'
         self.fields['password1'].widget.attrs['placeholder'] = '********'
         self.fields['password2'].widget.attrs['placeholder'] = '********'
 
@@ -34,7 +32,9 @@ class RegisterForm(UserCreationForm):
         for fieldname in ['email', 'name', 'password1', 'password2']:
             self.fields[fieldname].help_text = None
 
-        self.fields['password1'].help_text = 'Password must contain at least 8 characters.'
+        self.fields[
+            'password1'
+        ].help_text = 'Password must contain at least 8 characters.'
 
     class Meta:
         model = Account
@@ -97,9 +97,7 @@ class AccountSettingsForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['name'].widget.attrs[
-            'placeholder'
-        ] = 'First and last name'
+        self.fields['name'].widget.attrs['placeholder'] = 'First and last name'
         self.fields['bio'].widget.attrs['placeholder'] = 'Eat, sleep, garden.'
         self.fields['username'].widget.attrs['placeholder'] = 'Enter username'
 
@@ -163,15 +161,11 @@ class ChangeEmailForm(ModelForm):
 
     new_email = forms.EmailField(
         label='New email address',
-        widget=forms.EmailInput(
-            attrs={'placeholder': 'Enter new email'}
-        ),
+        widget=forms.EmailInput(attrs={'placeholder': 'Enter new email'}),
     )
     password_check = forms.CharField(
         label='Your password',
-        widget=forms.PasswordInput(
-            attrs={'placeholder': 'Enter your password'}
-        ),
+        widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password'}),
     )
 
     class Meta:
@@ -225,12 +219,9 @@ class ChangePasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['old_password'].widget.attrs[
-            'placeholder'] = 'Enter old password'
-        self.fields['new_password1'].widget.attrs[
-            'placeholder'] = 'Enter a new password'
-        self.fields['new_password2'].widget.attrs[
-            'placeholder'] = 'Enter new password again'
+        self.fields['old_password'].widget.attrs['placeholder'] = 'Enter old password'
+        self.fields['new_password1'].widget.attrs['placeholder'] = 'Enter a new password'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'Enter new password again'
 
         self.fields['old_password'].label = 'Your old password'
         self.fields['new_password1'].label = 'Pick a new password'
@@ -245,8 +236,7 @@ class ForgotPasswordForm(PasswordResetForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['email'].widget.attrs[
-            'placeholder'] = 'Enter your email'
+        self.fields['email'].widget.attrs['placeholder'] = 'Enter your email'
 
 
 class SetNewPasswordForm(SetPasswordForm):
@@ -257,10 +247,8 @@ class SetNewPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['new_password1'].widget.attrs[
-            'placeholder'] = 'Enter a new password'
-        self.fields['new_password2'].widget.attrs[
-            'placeholder'] = 'Enter new password again'
+        self.fields['new_password1'].widget.attrs['placeholder'] = 'Enter a new password'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'Enter new password again'
 
         self.fields['new_password1'].label = 'Pick a new password'
         self.fields['new_password2'].label = 'Re-enter new password'
