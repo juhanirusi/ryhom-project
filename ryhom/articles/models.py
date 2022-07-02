@@ -25,18 +25,31 @@ class Article(BaseAbstractModel):
         LESSON_LEARNED = 'Lesson-learned', 'Lesson-learned'
         PEOPLE_SAYING = 'What People say', 'What People say'
 
-    title = models.CharField(max_length=150, validators=[MinLengthValidator(5)])
-    summary = models.CharField(max_length=255)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    class ArticleStatus(models.TextChoices):
+        WRITER_SAVED_FOR_LATER = 'Saved For Later', 'Saved For Later'
+        WRITER_WANTS_TO_PUBLISH = 'Wants To Publish', 'Wants To Publish'
+        PUBLISHED = 'Published', 'Published'
+
+    title = models.CharField(max_length=150,
+        validators=[MinLengthValidator(5)]
+    )
+    summary = models.TextField(max_length=255, blank=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
     image = models.ImageField(blank=True, upload_to='article-images/')
     image_credit = models.CharField(blank=True, max_length=50)
-    content = RichTextUploadingField(config_name='custom_editor')
+    content = RichTextUploadingField(config_name='custom_editor', blank=True)
     categories = models.ManyToManyField(Category, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
-    type = models.CharField(max_length=25, choices=Type.choices, default=Type.ARTICLE)
+    type = models.CharField(max_length=25, choices=Type.choices,
+        default=Type.ARTICLE
+    )
     featured = models.BooleanField(default=False)
     likes = models.PositiveIntegerField(default=0)
-    published = models.BooleanField(default=False)
+    status = models.CharField(max_length=16, choices=ArticleStatus.choices,
+        default=ArticleStatus.WRITER_SAVED_FOR_LATER
+    )
     slug = models.SlugField(default='', blank=True, null=False, unique=True)
 
     class Meta:
@@ -69,7 +82,11 @@ class Article(BaseAbstractModel):
 
 
     def save(self, *args, **kwargs):
-        """Override the save method to generate a URL slug, or check if a duplicate slug exists and generate a new one for the article"""
+        """
+        Override the save method to generate a URL slug for
+        the article, but first check if a duplicate slug
+        exists and generate a new slug if it does.
+        """
         if self._state.adding is True:
             self._create_slug()
         super(Article, self).save(*args, **kwargs)
@@ -81,10 +98,14 @@ class Article(BaseAbstractModel):
 
 class Comment(BaseAbstractModel):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL, null=True
+    )
     comment = models.TextField() # <-- ADD A VALIDATOR TO FORM (50 to 6,000 CHARACTERS!)
     likes = models.PositiveIntegerField(default=0)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name="replies", null=True, blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE,
+        related_name="replies", null=True, blank=True
+    )
 
     class Meta:
         ordering=["-created"]
