@@ -1,7 +1,9 @@
-#from django.urls import path
+from django.urls import path
 
-#from .views import
+from .views import AddArticleView
 
 app_name = 'articles'
 
-urlpatterns = []
+urlpatterns = [
+    path('add-article/', AddArticleView.as_view(), name='add_article'),
+]
