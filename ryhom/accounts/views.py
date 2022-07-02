@@ -38,7 +38,7 @@ decorators = [login_required, confirm_password]
 class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
     form_class = RegisterForm
     template_name = 'accounts/create-account.html'
-    success_url =  reverse_lazy('accounts:create_account')
+    success_url = reverse_lazy('accounts:create_account')
 
     def form_valid(self, form):
         user = form.save(commit=False)
