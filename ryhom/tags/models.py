@@ -10,7 +10,6 @@ class Tag(models.Model):
     icon = models.ImageField(blank=True, upload_to='tag-icons/')
     description = models.TextField(max_length=300, default='', blank=True)
     slug = models.SlugField(unique=True, null=False, default='', blank=True)
-    categories = models.ManyToManyField(Category)
 
 
     def _generate_slug(self):
