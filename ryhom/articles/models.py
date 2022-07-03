@@ -1,3 +1,5 @@
+import itertools
+
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.core.validators import MinLengthValidator
@@ -5,8 +7,9 @@ from django.db import models
 from django.utils.text import slugify
 from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel
-from ryhom.core.utils import random_string_generator
 from ryhom.tags.models import Tag
+
+from .managers import UserPostsManager
 
 
 class Article(BaseAbstractModel):
@@ -37,7 +40,7 @@ class Article(BaseAbstractModel):
     author = models.ForeignKey(settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    image = models.ImageField(blank=True, upload_to='article-images/')
+    image = models.ImageField(blank=True, upload_to='article-thumbnails/')
     image_credit = models.CharField(blank=True, max_length=50)
     content = RichTextUploadingField(config_name='custom_editor', blank=True)
     categories = models.ManyToManyField(Category, blank=True)
@@ -52,12 +55,12 @@ class Article(BaseAbstractModel):
     )
     slug = models.SlugField(default='', blank=True, null=False, unique=True)
 
+    objects = models.Manager()
+    user_posts = UserPostsManager()
+
     class Meta:
         ordering = ['-created', '-modified']
         unique_together = ('author', 'title') # 1 author can't have multiple articles with same title
-
-        # ASSIGN THE DEFAULT MODEL MANAGER BEFORE OUR CUSTOM ONES!
-        #objects = models.Manager()
 
 
     # def total_likes(self):
@@ -66,17 +69,18 @@ class Article(BaseAbstractModel):
 
     def _create_slug(self):
         """
-        Remove all whitespace from the name. Then check if slug
-        already exists in the database. If it does exists, add
-        a number after the slug until the database doesn't
-        contain any other matching slug.
+        To generate a unique URL slug we slugify the title of the article,
+        then check if the slug already exists in the database, if it does
+        we'll add a number (article-slug = article-slug-1) after the
+        slug to generate a unique slug, then check again if the slug
+        exists and continue this until a unique slug is generated.
         """
-        slug = unique_slug = slugify(self.title)
-        random_string = random_string_generator()
-        unique_slug = '{}-{}'.format(slug, random_string)
+        slug = unique_slug = slugify(self.title) # Same value to 2 variables
 
-        while Article.objects.filter(slug=unique_slug).exists():
-            unique_slug = '{}-{}'.format(slug, random_string_generator())
+        for num in itertools.count(1):
+            if not Article.objects.filter(slug=unique_slug).exists():
+                break
+            unique_slug = '{}-{}'.format(slug, num)
 
         self.slug = unique_slug
 
