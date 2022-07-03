@@ -22,7 +22,7 @@ class AddArticleForm(ModelForm):
     class Meta:
         model = Article
         fields = (
-            'author', 'title', 'image', 'image_credit', 'summary', 'content'
+            'author', 'title', 'summary', 'image', 'image_credit', 'content'
         )
         labels = {
             'author': '',
