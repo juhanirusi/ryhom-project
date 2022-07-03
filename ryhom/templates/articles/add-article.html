@@ -25,6 +25,11 @@
     <p><em>{{ form.title.help_text }}</em></p>
     {{ form.title.errors }}
 
+    <p>{{ form.summary.label_tag }}</p>
+    {{ form.summary }}
+    <p><em>{{ form.summary.help_text }}</em></p>
+    {{ form.summary.errors }}
+
     <p>{{ form.image.label_tag }}</p>
     {{ form.image }}
     <p><em>{{ form.image.help_text }}</em></p>
@@ -35,18 +40,14 @@
     <p><em>{{ form.image_credit.help_text }}</em></p>
     {{ form.image_credit.errors }}
 
-    <p>{{ form.summary.label_tag }}</p>
-    {{ form.summary }}
-    <p><em>{{ form.summary.help_text }}</em></p>
-    {{ form.summary.errors }}
-
     <p>{{ form.content.label_tag }}</p>
     {{ form.content }}
     <p><em>{{ form.content.help_text }}</em></p>
     {{ form.content.errors }}
 
     <button name="save_for_later" type="submit">Save</button>
-    <button name="submit_for_review" type="submit">Submit Article For Review</button>
+
+    <button name="submit_for_review" type="submit">Submit For Review</button>
 
   </form>
 
