@@ -30,9 +30,15 @@ class UserAdmin(BaseUserAdmin):
     actions = [make_active, make_inactive]
 
     fieldsets = (
-        (_('Account Info'), {'fields': ('email', 'username', 'slug', 'password')}),
-        (_('Personal Info'), {'fields': ('name', 'gender', 'birthday', 'profile_image', 'bio',)}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
+        (_('Account Info'), {'fields': (
+            'email', 'username', 'slug', 'password')}
+        ),
+        (_('Personal Info'), {'fields': (
+            'name', 'gender', 'birthday', 'profile_image', 'bio', 'website')}
+        ),
+        (_('Permissions'), {'fields': (
+            'is_active', 'is_staff', 'is_superuser',)}
+        ),
         (_('Important Dates'), {'fields': ('last_login', 'date_joined',)}),
     )
 
