@@ -4,4 +4,73 @@
 
 {% block content %}
 
-{% endblock %}
+  <p>Categories:
+  {% for category in article.categories.all %}
+    {{ category.name }}
+  {% endfor %}
+  </p>
+
+  <p>Tags:
+  {% for tag in article.tags.all %}
+    {{ tag.name }}
+  {% endfor %}
+  </p>
+
+  <p>Updated on {{ article.modified | date:'M j, Y' }}</p>
+
+  <h1>{{ article.title }}</h1>
+  <p>{{ article.summary }}</p>
+
+  {% if article.author.profile_image.url != '' %}
+    <img src="{{ article.author.profile_image.url }}" width="100" height="100"></img>
+  {% endif %}
+  <p>By <a href="{% url 'accounts:user_profile' slug=article.author.slug %}">{{ article.author }}</a></p>
+
+  {% if article.image.url != '' %}
+    <img src="{{ article.image.url }}" width="800" height="500"></img>
+  {% endif %}
+  <article>
+    {{ article.content | safe }}
+  </article>
+
+
+
+
+  <h2> Comments </h2>
+
+  {% if user.is_authenticated %}
+    <form action="" method="POST">
+      {% csrf_token %}
+      <label for="comment">Type Comment here</label>
+      {{ comment_form.comment }}
+      <input type="submit" value="Post">
+    </form>
+  {% else %}
+    <h2>You need to <a href="{% url 'accounts:login' %}?next={{ request.path }}">Login</a> to comment</h2>
+  {% endif %}
+
+  {% for comment in comments %}
+    {% if comment.is_parent %}
+    <p>{{ comment.created | timesince }}</p>
+    <h3>{{ comment.author }} : {{ comment.comment }}</h3>
+    <p>{{ comment.upvotes }}</p>
+
+    {% for replies in comment.child_comments %}
+      <p>--{{ comment.created | timesince }}</p>
+      <h3>--{{ comment.author }} : {{ replies.comment }}</h3>
+      <p>--{{ comment.upvotes }}</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+      <form action="" method="POST">
+        {% csrf_token %}
+        <label for="comment">Reply here</label>
+        <textarea type="text" name="comment"></textarea>
+        <input type="hidden" value="{{ comment.pk }}" name="parent">
+        <input type="submit" value="Post">
+      </form>
+    {% endif %}
+    {% endif %}
+  {% endfor %}
+
+{% endblock content %}
