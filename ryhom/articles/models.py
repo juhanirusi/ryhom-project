@@ -1,4 +1,5 @@
 import itertools
+import uuid
 
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
@@ -9,7 +10,7 @@ from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel
 from ryhom.tags.models import Tag
 
-from .managers import UserPostsManager
+from .managers import UserCommentsManager, UserPostsManager
 
 
 class Article(BaseAbstractModel):
@@ -49,7 +50,7 @@ class Article(BaseAbstractModel):
         default=Type.ARTICLE
     )
     featured = models.BooleanField(default=False)
-    likes = models.PositiveIntegerField(default=0)
+    #likes = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=16, choices=ArticleStatus.choices,
         default=ArticleStatus.WRITER_SAVED_FOR_LATER
     )
@@ -100,29 +101,39 @@ class Article(BaseAbstractModel):
         return self.title
 
 
-class Comment(BaseAbstractModel):
+class Comment(models.Model):
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        null=False,
+        unique=True,
+    )
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL, null=True
     )
     comment = models.TextField() # <-- ADD A VALIDATOR TO FORM (50 to 6,000 CHARACTERS!)
-    likes = models.PositiveIntegerField(default=0)
+    upvotes = models.PositiveIntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
     parent = models.ForeignKey('self', on_delete=models.CASCADE,
         related_name="replies", null=True, blank=True
     )
 
+    objects = models.Manager()
+    user_comments = UserCommentsManager()
+
     class Meta:
-        ordering=["-created"]
+        ordering=['-created']
 
-    # @property
-    # def child_comments(self):
-    #     return Comment.objects.filter(parent=self).reverse()
+    @property
+    def child_comments(self):
+        return Comment.objects.filter(parent=self).all()
 
-    # @property
-    # def is_parent(self):
-    #     if self.parent is None:
-    #         return True
-    #     return False
+    @property
+    def is_parent(self):
+        if self.parent is None:
+            return True
+        return False
 
     def __str__(self):
         return f'Comment by {self.author}'
