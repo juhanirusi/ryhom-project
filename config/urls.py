@@ -16,12 +16,12 @@ urlpatterns = [
     path('', include('ryhom.articles.urls', namespace='articles')),
     path('', include('ryhom.microposts.urls', namespace='microposts')),
 
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('/ckeditor/', include('ckeditor_uploader.urls')),
 ]
 
 
 if settings.IS_ADMIN_ENABLED:
-    urlpatterns.append(path('admin/', admin.site.urls))
+    urlpatterns.append(path('site/ryhom/admin/', admin.site.urls))
 
 if settings.DEBUG:
     urlpatterns += [
