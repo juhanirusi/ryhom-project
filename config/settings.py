@@ -79,7 +79,7 @@ CKEDITOR_CONFIGS = {
             ['Maximize'],
         ],
         'uiColor': '#F9F9F9',
-        'format_tags': 'h1;h2;h3;p',
+        'format_tags': 'h2;h3;p',
         'forcePasteAsPlainText': True,
         'toolbarCanCollapse': True,
         'removePlugins': 'elementspath',
