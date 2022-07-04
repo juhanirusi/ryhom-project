@@ -35,7 +35,7 @@ def remove_featured_status(modeladmin, request, queryset):
 class ArticleAdmin(admin.ModelAdmin):
     """Define the article page customization."""
     ordering = ['-modified']
-    list_display = ['title', 'author', 'type', 'status', 'likes', 'featured', 'slug']
+    list_display = ['title', 'author', 'type', 'status', 'featured', 'slug']
     list_filter = ('type', 'status', 'featured', 'created', 'modified',)
     search_fields = ['title', 'name', 'username']
     actions = [
@@ -53,7 +53,7 @@ class ArticleAdmin(admin.ModelAdmin):
         (_('Featured Image'), {'fields': ('image', 'image_credit',)}),
         (_('Categorizing'), {'fields': ('categories', 'tags', 'type',)}),
         (_('Write The Article'), {'fields': ('content',)}),
-        (_('Statuses'), {'fields': ('status', 'featured', 'likes',)}),
+        (_('Statuses'), {'fields': ('status', 'featured',)}),
         (_('Slug'), {'fields': ('slug',)}),
     )
 
