@@ -8,4 +8,7 @@ urlpatterns = [
     path('add-article/', AddArticleView.as_view(), name='add_article'),
     path('my-posts/', UserPostsView.as_view(), name='my_posts'),
     path('<slug:author>/<slug:slug>/', ArticleDetailView.as_view(), name='article_detail'),
+
+    # path('post/<int:post_pk>/comment/delete/<int:pk>/', CommentDeleteView.as_view(), name='comment-delete'),
+    # path('post/<int:post_pk>/comment/<int:pk>/like', AddCommentLike.as_view(), name='comment-like'),
 ]
