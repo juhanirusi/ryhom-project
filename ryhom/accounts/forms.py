@@ -100,19 +100,21 @@ class AccountSettingsForm(UserChangeForm):
         self.fields['name'].widget.attrs['placeholder'] = 'First and last name'
         self.fields['bio'].widget.attrs['placeholder'] = 'Eat, sleep, garden.'
         self.fields['username'].widget.attrs['placeholder'] = 'Enter username'
+        self.fields['website'].widget.attrs['placeholder'] = 'Enter website URL'
 
     password = None
 
     class Meta:
         model = Account
-        fields = ('name', 'username', 'gender',
-                'birthday', 'profile_image', 'bio',
+        fields = ('name', 'username', 'gender', 'birthday',
+            'profile_image', 'bio', 'website'
         )
 
         labels = {
             'name'              : 'Full Name',
             'bio'               : 'Short Bio',
             'profile_image'     : 'Profile Image',
+            'website'           : 'Your Personal Website',
         }
 
         date_labels = ('Year', 'Month', 'Day')
@@ -130,7 +132,7 @@ class AccountSettingsForm(UserChangeForm):
                 months=MONTHS,
                 years=year_range
             ),
-            'bio': Textarea(attrs={"rows":5, "cols":35})
+            'bio': Textarea(attrs={'rows':5, 'cols':35})
         }
 
     def clean_username(self):
@@ -142,7 +144,7 @@ class AccountSettingsForm(UserChangeForm):
 
         if len(username) < 3:
             raise ValidationError(
-                'Give yourself a username that is at least 3 characters.'
+                'Give yourself a username that is at least 3 characters long!'
             )
         return username
 
@@ -185,8 +187,8 @@ class ChangeEmailForm(ModelForm):
 
         if new_email == current_email:
             raise ValidationError(
-                "Your new email can't be the same as your old email. \
-                Choose a different email address!"
+                'Your new email can\'t be the same as your old email. \
+                Choose a different email address!'
             )
         return self.cleaned_data
 
