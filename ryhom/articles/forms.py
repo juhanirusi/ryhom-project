@@ -1,7 +1,7 @@
 from django.forms import ModelForm
-from django.forms.widgets import HiddenInput
+from django.forms.widgets import HiddenInput, TextInput
 
-from .models import Article
+from .models import Article, Comment
 
 
 class AddArticleForm(ModelForm):
@@ -34,4 +34,22 @@ class AddArticleForm(ModelForm):
         help_texts = {
             'image_credit': 'Who owns or created this image?',
             'summary': 'Add a brief summary about the content of the article',
+        }
+
+
+class AddCommentForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(AddCommentForm, self).__init__(*args, **kwargs)
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add your comment...'
+
+    class Meta:
+        model = Comment
+        fields = ('comment', 'parent')
+        labels = {
+            'comment': '',
+        }
+
+        widgets = {
+            'content' : TextInput(),
         }
