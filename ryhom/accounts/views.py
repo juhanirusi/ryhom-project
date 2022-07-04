@@ -18,6 +18,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import DetailView, View
 from django.views.generic.edit import CreateView, UpdateView
+from ryhom.articles.models import Article, Comment
 from ryhom.core.decorators import confirm_password
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
 
@@ -169,14 +170,15 @@ class UserProfileView(DetailView):
     #     context['book_list'] = Book.objects.all()
     #     return context
 
-    # def get_context_data(self, **kwargs):
-    #     # Call the base implementation first to get a context
-    #     context = super().get_context_data(**kwargs)
-    #     # Add in a QuerySet of all the user posts
-    #     user_posts = MyPost.objects.filter(author=self.request.user).order_by('-cr_date')
-    #     context['user_posts'] = user_posts
-    #     context['user'] = self.request.user
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        slug = self.kwargs['slug']
+
+        user_posts = Article.user_posts.user_profile_published(slug)
+        user_comments = Comment.user_comments.user_profile_comments(slug)
+        context['user_posts'] = user_posts
+        context['user_comments'] = user_comments
+        return context
 
 
 @method_decorator(decorators, name='dispatch')
