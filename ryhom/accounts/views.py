@@ -114,18 +114,6 @@ class LoginUserView(LoginView):
     redirect_authenticated_user = settings.LOGIN_REDIRECT_URL
 
 
-@login_required
-def user_profile_redirect(request):
-    """
-    Used as a dynamic redirect to user's personal profile, because the
-    user profile URL requires a slug kwarg, hence, a custom redirect
-
-    settings.py --> LOGIN_REDIRECT_URL
-    """
-    slug = request.user.slug
-    return redirect('accounts:user_profile', slug=slug)
-
-
 class LogoutUserView(LogoutView):
     def get_next_page(self):
         next_page = super(LogoutUserView, self).get_next_page()
