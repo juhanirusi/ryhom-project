@@ -190,6 +190,10 @@ class ChangeEmailForm(ModelForm):
                 'Your new email can\'t be the same as your old email. \
                 Choose a different email address!'
             )
+        if Account.objects.filter(email=new_email).exists():
+            raise ValidationError(
+                'This email address already exists!'
+            )
         return self.cleaned_data
 
     def clean_new_email(self):
