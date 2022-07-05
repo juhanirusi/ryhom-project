@@ -82,10 +82,7 @@ class ArticleDetailView(DetailView):
         return context
 
     def get_object(self):
-        return get_object_or_404(self.queryset,
-            author__slug=self.kwargs['author'],
-            slug=self.kwargs['slug']
-        )
+        return get_object_or_404(self.queryset, slug=self.kwargs['article_slug'])
 
     def post(self , request , *args , **kwargs):
         if self.request.method == 'POST':
@@ -97,7 +94,13 @@ class ArticleDetailView(DetailView):
                 except:
                     parent=None
 
-            new_comment = Comment(comment=comment , author=self.request.user , article=self.get_object() , parent=parent)
+            new_comment = Comment(
+                comment=comment,
+                author=self.request.user,
+                article=self.get_object(),
+                parent=parent
+            )
+
             new_comment.save()
             return redirect(self.request.path_info)
 
