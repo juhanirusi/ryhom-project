@@ -1,0 +1,14 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}{{ category.name }}{% endblock title %}
+
+{% block content %}
+
+  <h1>{{ category.name }}</h1>
+  <p>{{ category.description }}</p>
+
+  {% for post in posts_in_category %}
+    <p>{{ post.title }}</p>
+  {% endfor %}
+
+{% endblock content %}
