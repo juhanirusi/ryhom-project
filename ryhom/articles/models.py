@@ -89,8 +89,7 @@ class Article(BaseAbstractModel):
     def save(self, *args, **kwargs):
         """
         Override the save method to generate a URL slug for
-        the article, but first check if a duplicate slug
-        exists and generate a new slug if it does.
+        the article.
         """
         if self._state.adding is True:
             self._create_slug()
