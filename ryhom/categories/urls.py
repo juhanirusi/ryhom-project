@@ -1,7 +1,9 @@
-#from django.urls import path
+from django.urls import path
 
-#from .views import
+from .views import CategoryDetailView
 
 app_name = 'categories'
 
-urlpatterns = []
+urlpatterns = [
+    path('<slug:category_slug>/', CategoryDetailView.as_view(), name='post_category'),
+]
