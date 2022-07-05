@@ -38,7 +38,7 @@ class Category(models.Model):
         for num in itertools.count(1):
             if not Category.objects.filter(slug=unique_slug).exists():
                 break
-            unique_slug = '{}{}'.format(slug, num)
+            unique_slug = '{}-{}'.format(slug, num)
 
         self.slug = unique_slug
 
@@ -69,11 +69,6 @@ class Category(models.Model):
 
 
 #-----------------------------------------------------------------------------
-"""
-urls.py...
-"""
-
-# url(r'^business/(?P<hierarchy>.+)/', 'directory.views.show_category')
 
 """
 views.py...
