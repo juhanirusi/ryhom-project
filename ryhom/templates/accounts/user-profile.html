@@ -1,6 +1,6 @@
 {% extends 'boilerplate.html' %}
 
-{% block title %}{{ account.name }} On Ryhom{% endblock title %}
+{% block title %}{{ account.name }} On {{ request.META.HTTP_HOST }}{% endblock title %}
 
 {% block content %}
 

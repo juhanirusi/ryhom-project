@@ -1,6 +1,6 @@
 {% extends 'boilerplate.html' %}
 
-{% block title %}{{ category.name }}{% endblock title %}
+{% block title %}{{ category.name }} - {{ request.META.HTTP_HOST }}{% endblock title %}
 
 {% block content %}
 
