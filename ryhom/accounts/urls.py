@@ -56,11 +56,10 @@ urlpatterns = [
         name='account_settings'
     ),
     path(
-        '<slug:slug>/',
+        '<slug:user_profile_slug>/',
         UserProfileView.as_view(),
         name='user_profile'
     ),
-    # path('profile-redirect/', user_profile_redirect),
 
     path(
         'settings/password/change/',
