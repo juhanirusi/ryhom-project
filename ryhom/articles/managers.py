@@ -18,12 +18,12 @@ class UserPostsManager(models.Manager):
             Q(status='Wants To Publish') &
             Q(author=user)).order_by('-modified')
 
-    def user_profile_published(self, user_slug):
+    def user_profile_published(self, user):
         return self.get_queryset().filter(
             Q(status='Published') &
-            Q(author__slug=user_slug)).order_by('-modified')
+            Q(author=user)).order_by('-modified')
 
 
 class UserCommentsManager(models.Manager):
-    def user_profile_comments(self, user_slug):
-        return self.get_queryset().filter(Q(author__slug=user_slug))
+    def user_profile_comments(self, user):
+        return self.get_queryset().filter(Q(author=user))
