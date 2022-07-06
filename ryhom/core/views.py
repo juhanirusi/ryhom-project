@@ -37,4 +37,4 @@ def user_profile_redirect(request):
     settings.py --> LOGIN_REDIRECT_URL
     """
     slug = request.user.slug
-    return redirect('accounts:user_profile', slug=slug)
+    return redirect('accounts:user_profile', user_profile_slug=slug)
