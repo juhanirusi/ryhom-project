@@ -11,7 +11,7 @@ from django.contrib.auth.views import (LoginView, LogoutView,
                                        PasswordResetConfirmView,
                                        PasswordResetDoneView,
                                        PasswordResetView)
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
@@ -52,9 +52,9 @@ class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
         # https://docs.python.org/3/library/smtplib.html#smtplib.SMTPException
         try:
             send_registration_confirm_email(self, user, to_email)
-            success_message = (f"An account has been created! We've sent \
+            success_message = (f'An account has been created! We\'ve sent \
                                 a verification link to <b>{to_email}</b>. \
-                                Click it to activate your account!")
+                                Click it to activate your account!')
             messages.success(self.request, success_message)
         except (SMTPException, socket.gaierror):
             error_message = 'There was an error connecting to the email \
@@ -141,8 +141,8 @@ class AccountSettingsView(UpdateView):
 
     def form_invalid(self, form):
         messages.error(self.request,
-                    "Unable to make the changes, \
-                    fix the errors below and try again."
+                    'Unable to make the changes, \
+                    fix the errors below and try again.'
         )
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -158,14 +158,19 @@ class UserProfileView(DetailView):
     #     context['book_list'] = Book.objects.all()
     #     return context
 
+    def get_object(self):
+        self.user = get_object_or_404(Account, slug=self.kwargs['user_profile_slug'])
+        print(self.user)
+        return self.user
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        slug = self.kwargs['slug']
 
-        user_posts = Article.user_posts.user_profile_published(slug)
-        user_comments = Comment.user_comments.user_profile_comments(slug)
+        user_posts = Article.user_posts.user_profile_published(self.user)
+        user_comments = Comment.user_comments.user_profile_comments(self.user)
         context['user_posts'] = user_posts
         context['user_comments'] = user_comments
+
         return context
 
 
@@ -185,8 +190,8 @@ class ChangePasswordView(PasswordChangeView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        error_message = "We couldn't change your password, \
-                        fix the errors below and try again."
+        error_message = 'We couldn\'t change your password, \
+                        fix the errors below and try again.'
 
         messages.error(self.request, error_message)
         return self.render_to_response(self.get_context_data(form=form))
@@ -239,8 +244,8 @@ class ChangeEmailView(UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        error_message = "We couldn't change your email address, \
-                        fix the errors below and try again."
+        error_message = 'We couldn\'t change your email address, \
+                        fix the errors below and try again.'
 
         messages.error(self.request, error_message)
         return self.render_to_response(self.get_context_data(form=form))
