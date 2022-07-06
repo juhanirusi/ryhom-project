@@ -71,18 +71,20 @@ class ArticleDetailView(DetailView):
     #     context['slug'] = Article.objects.filter(slug=self.object.slug).first()
     #     return context
 
+    def get_object(self):
+        self.article = get_object_or_404(self.queryset, slug=self.kwargs['article_slug'])
+        return self.article
+
     def get_context_data(self , **kwargs):
         context = super(ArticleDetailView, self).get_context_data(**kwargs)
-        connected_comments = Comment.objects.filter(article=self.get_object())
+        connected_comments = Comment.objects.filter(article=self.article)
         number_of_comments = connected_comments.count()
 
+        context['article_author'] = self.article.author.slug
         context['comments'] = connected_comments
         context['nro_of_comments'] = number_of_comments
         context['comment_form'] = AddCommentForm()
         return context
-
-    def get_object(self):
-        return get_object_or_404(self.queryset, slug=self.kwargs['article_slug'])
 
     def post(self , request , *args , **kwargs):
         if self.request.method == 'POST':
