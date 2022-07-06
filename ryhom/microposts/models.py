@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel
 from ryhom.tags.models import Tag
@@ -22,6 +23,11 @@ class Micropost(BaseAbstractModel):
     likes = models.PositiveIntegerField(default=0)
     published = models.BooleanField(default=False)
     slug = models.SlugField(default='', blank=True, null=False, unique=True)
+
+
+    # def get_absolute_url(self):
+    #     return reverse('microposts:micropost_detail', kwargs={'micropost_slug': self.slug})
+
 
     def __str__(self):
         return self.title
