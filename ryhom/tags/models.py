@@ -1,6 +1,7 @@
 import itertools
 
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 from ryhom.categories.models import Category
 
@@ -30,6 +31,10 @@ class Tag(models.Model):
             self._generate_slug()
 
         super().save(*args, **kwargs)
+
+
+    def get_absolute_url(self):
+        return reverse('tags:tag_detail', kwargs={'tag_slug': self.slug})
 
 
     def __str__(self):

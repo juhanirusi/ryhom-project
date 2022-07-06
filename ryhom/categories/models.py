@@ -1,9 +1,8 @@
 import itertools
 
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
-
-#from django.urls import reverse
 
 
 class Category(models.Model):
@@ -54,8 +53,8 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
-    # def get_absolute_url(self):
-    #     return reverse("categories:category", kwargs={'slug': self.slug})
+    def get_absolute_url(self):
+        return reverse('categories:category_detail', kwargs={'category_slug': self.slug})
 
 
     def __str__(self):

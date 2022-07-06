@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 from .managers import AccountManager
@@ -105,6 +106,10 @@ class Account(AbstractBaseUser, PermissionsMixin):
         #     img.thumbnail(output_size)
         #     img.save(self.image.path)
         super(Account, self).save(*args, **kwargs)
+
+
+    def get_absolute_url(self):
+        return reverse('accounts:user_profile', kwargs={'user_profile_slug': self.slug})
 
 
     def get_full_name(self):

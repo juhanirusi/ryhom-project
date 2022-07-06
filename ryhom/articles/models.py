@@ -5,6 +5,7 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel
@@ -96,6 +97,10 @@ class Article(BaseAbstractModel):
         super(Article, self).save(*args, **kwargs)
 
 
+    def get_absolute_url(self):
+        return reverse('articles:article_detail', kwargs={'article_slug': self.slug})
+
+
     def __str__(self):
         return self.title
 
@@ -124,15 +129,18 @@ class Comment(models.Model):
     class Meta:
         ordering=['-created']
 
+
     @property
     def child_comments(self):
         return Comment.objects.filter(parent=self).all()
+
 
     @property
     def is_parent(self):
         if self.parent is None:
             return True
         return False
+
 
     def __str__(self):
         return f'Comment by {self.author}'
