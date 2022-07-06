@@ -5,5 +5,5 @@ from .views import CategoryDetailView
 app_name = 'categories'
 
 urlpatterns = [
-    path('<slug:category_slug>/', CategoryDetailView.as_view(), name='post_category'),
+    path('<slug:category_slug>/', CategoryDetailView.as_view(), name='category_detail'),
 ]
