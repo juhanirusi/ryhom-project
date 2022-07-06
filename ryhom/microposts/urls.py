@@ -2,6 +2,6 @@
 
 #from .views import
 
-app_name = 'categories'
+app_name = 'microposts'
 
 urlpatterns = []
