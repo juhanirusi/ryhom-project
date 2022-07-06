@@ -1,0 +1,14 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}{{ tag.name }} - {{ request.META.HTTP_HOST }}{% endblock title %}
+
+{% block content %}
+
+  <h1>{{ tag.name }}</h1>
+  <p>{{ tag.description }}</p>
+
+  {% for post in posts_in_tag %}
+    <p>{{ post.title }}</p>
+  {% endfor %}
+
+{% endblock content %}
