@@ -198,9 +198,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LOGIN_URL = '/u/auth/login/'
-LOGIN_REDIRECT_URL = '/profile-redirect/'
-LOGOUT_REDIRECT_URL = '/u/auth/login/'
+LOGIN_URL = '/u/auth/login'
+LOGIN_REDIRECT_URL = '/profile-redirect'
+LOGOUT_REDIRECT_URL = '/u/auth/login'
 
 #CSRF_FAILURE_VIEW
 
