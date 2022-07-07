@@ -8,7 +8,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from ryhom.categories.models import Category
-from ryhom.core.models import BaseAbstractModel
+from ryhom.core.models import BaseAbstractModel, BaseCommentModel
 from ryhom.tags.models import Tag
 
 from .managers import UserCommentsManager, UserPostsManager
@@ -61,6 +61,8 @@ class Article(BaseAbstractModel):
     user_posts = UserPostsManager()
 
     class Meta:
+        verbose_name = 'Article'
+        verbose_name_plural = 'Articles'
         ordering = ['-created', '-modified']
         unique_together = ('author', 'title') # 1 author can't have multiple articles with same title
 
@@ -105,34 +107,21 @@ class Article(BaseAbstractModel):
         return self.title
 
 
-class Comment(models.Model):
-    uuid = models.UUIDField(
-        default=uuid.uuid4,
-        editable=False,
-        null=False,
-        unique=True,
-    )
+class ArticleComment(BaseCommentModel):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL, null=True
-    )
-    comment = models.TextField() # <-- ADD A VALIDATOR TO FORM (50 to 6,000 CHARACTERS!)
-    upvotes = models.PositiveIntegerField(default=0)
-    created = models.DateTimeField(auto_now_add=True, editable=False)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE,
-        related_name="replies", null=True, blank=True
-    )
 
     objects = models.Manager()
-    user_comments = UserCommentsManager()
+    article_comments = UserCommentsManager()
 
     class Meta:
+        verbose_name = 'Comment'
+        verbose_name_plural = 'Comments'
         ordering=['-created']
 
 
     @property
     def child_comments(self):
-        return Comment.objects.filter(parent=self).all()
+        return ArticleComment.objects.filter(parent=self).all()
 
 
     @property
