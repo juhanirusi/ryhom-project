@@ -6,5 +6,5 @@ app_name = 'core'
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
-    path('profile-redirect/', user_profile_redirect),
+    path('profile-redirect', user_profile_redirect),
 ]
