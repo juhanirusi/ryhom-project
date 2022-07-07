@@ -1,6 +1,7 @@
 {% extends 'boilerplate.html' %}
 
 {% block title %}{{ tag.name }} - {{ request.META.HTTP_HOST }}{% endblock title %}
+{% block meta_description %}{{ tag.description | slice:':160' }}{% endblock meta_description %}
 
 {% block content %}
 

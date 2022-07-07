@@ -1,6 +1,7 @@
 {% extends 'boilerplate.html' %}
 
 {% block title %}{{ account.name }} On {{ request.META.HTTP_HOST }}{% endblock title %}
+{% block meta_description %}{{ account.bio | slice:':160' }}{% endblock meta_description %}
 
 {% block content %}
 
