@@ -1,26 +1,15 @@
-<!DOCTYPE html>
-<html>
+{% extends 'boilerplate.html' %}
 
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="">
-  </head>
+{% block title %}Ryhom{% endblock title %}
 
-  <body>
+{% block navbar %}
+  {% include 'navbar.html' %}
+{% endblock navbar %}
 
-    {% block navbar %}
-      {% include "navbar.html" %}
-    {% endblock navbar %}
+{% block content %}
 
-    <h1>The front page of the site = 'index.html'</h1>
+  <h1>The front page of the site = 'index.html'</h1>
 
-    <p>JEEEE</p>
+  <p>JEEEE</p>
 
-  </body>
-
-</html>
-
+{% endblock content %}

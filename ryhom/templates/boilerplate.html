@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>
-      {% block title %}{% endblock title %}
-    </title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}{% endblock meta_description %}"/>
+    <title>{% block title %}{% endblock title %}</title>
+    {% if article.slug or micropost.slug in request.path %}
+      <meta name="author" content="{% block meta_author %}{% endblock meta_author %}">
+    {% endif %}
+
     {% comment %}<link rel="stylesheet" href="{% static "base.css" %}">
     Additional CSS files we might want to use{% endcomment %}
     {% block stylesheets %}{% endblock stylesheets %}
   </head>
 
     <body>
-      {% block content %}
-      {% endblock content %}
+      {% block navbar %}{% endblock navbar %}
+
+      {% block content %}{% endblock content %}
     </body>
 
 </html>
