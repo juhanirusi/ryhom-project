@@ -11,16 +11,16 @@ def random_string_generator(size=10, chars=True, ints=True):
 
     For example, when "chars & ints == True"...
 
-    'ryhom.com/indoor-gardening-beginner-guide-53nhzw3bcm'
+    'ryhom.com/post/53nhzw3bcm'
     """
 
-    characters = string.ascii_lowercase
+    lowercase_letters = string.ascii_lowercase
     integers = string.digits
 
     if chars and ints:
-        random_includes = characters + integers
-    elif chars:
-        random_includes = characters
+        random_includes = lowercase_letters + integers
+    elif chars and not ints:
+        random_includes = lowercase_letters
     else:
         random_includes = integers
 
