@@ -12,6 +12,10 @@ class Tag(models.Model):
     description = models.TextField(max_length=300, default='', blank=True)
     slug = models.SlugField(unique=True, null=False, default='', blank=True)
 
+    class Meta:
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
+
 
     def _generate_slug(self):
         name = self.name
