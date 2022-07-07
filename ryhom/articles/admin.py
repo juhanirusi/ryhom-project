@@ -3,7 +3,7 @@ from django.db.models import ManyToManyField
 from django.forms import CheckboxSelectMultiple
 from django.utils.translation import gettext_lazy as _
 
-from .models import Article, Comment
+from .models import Article, ArticleComment
 
 # Register your models here.
 
@@ -61,4 +61,4 @@ class ArticleAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Article, ArticleAdmin)
-admin.site.register(Comment)
+admin.site.register(ArticleComment)

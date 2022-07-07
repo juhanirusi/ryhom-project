@@ -6,7 +6,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView
 
 from .forms import AddArticleForm, AddCommentForm
-from .models import Article, Comment
+from .models import Article, ArticleComment
 
 
 class AddArticleView(LoginRequiredMixin, CreateView):
@@ -77,7 +77,7 @@ class ArticleDetailView(DetailView):
 
     def get_context_data(self , **kwargs):
         context = super(ArticleDetailView, self).get_context_data(**kwargs)
-        connected_comments = Comment.objects.filter(article=self.article)
+        connected_comments = ArticleComment.objects.filter(article=self.article)
         number_of_comments = connected_comments.count()
 
         context['article_author'] = self.article.author.slug
@@ -96,7 +96,7 @@ class ArticleDetailView(DetailView):
                 except:
                     parent=None
 
-            new_comment = Comment(
+            new_comment = ArticleComment(
                 comment=comment,
                 author=self.request.user,
                 article=self.get_object(),

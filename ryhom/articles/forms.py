@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django.forms.widgets import HiddenInput, TextInput
 
-from .models import Article, Comment
+from .models import Article, ArticleComment
 
 
 class AddArticleForm(ModelForm):
@@ -44,7 +44,7 @@ class AddCommentForm(ModelForm):
         self.fields['comment'].widget.attrs['placeholder'] = 'Add your comment...'
 
     class Meta:
-        model = Comment
+        model = ArticleComment
         fields = ('comment', 'parent')
         labels = {
             'comment': '',

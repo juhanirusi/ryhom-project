@@ -18,7 +18,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import DetailView, View
 from django.views.generic.edit import CreateView, UpdateView
-from ryhom.articles.models import Article, Comment
+from ryhom.articles.models import Article, ArticleComment
 from ryhom.core.decorators import confirm_password
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
 
@@ -167,7 +167,7 @@ class UserProfileView(DetailView):
         context = super().get_context_data(**kwargs)
 
         user_posts = Article.user_posts.user_profile_published(self.user)
-        user_comments = Comment.user_comments.user_profile_comments(self.user)
+        user_comments = ArticleComment.article_comments.user_profile_comments(self.user)
         context['user_posts'] = user_posts
         context['user_comments'] = user_comments
 
