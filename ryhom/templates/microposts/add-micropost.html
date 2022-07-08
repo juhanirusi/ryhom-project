@@ -1,0 +1,47 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Add A Micropost{% endblock title %}
+
+{% block content %}
+  <h1>Add A Micropost...</h1>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message | safe }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <form action="" enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+
+    {{ form.media }}
+
+    <p>{{ form.title.label_tag }}</p>
+    {{ form.title }}
+    <p><em>{{ form.title.help_text }}</em></p>
+    {{ form.title.errors }}
+
+    <p>{{ form.image.label_tag }}</p>
+    {{ form.image }}
+    <p><em>{{ form.image.help_text }}</em></p>
+    {{ form.image.errors }}
+
+    <p>{{ form.image_credit.label_tag }}</p>
+    {{ form.image_credit }}
+    <p><em>{{ form.image_credit.help_text }}</em></p>
+    {{ form.image_credit.errors }}
+
+    <p>{{ form.content.label_tag }}</p>
+    {{ form.content }}
+    <p><em>{{ form.content.help_text }}</em></p>
+    {{ form.content.errors }}
+
+    <button type="submit">Submit For Review</button>
+
+  </form>
+
+{% endblock content %}
