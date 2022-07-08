@@ -1,5 +1,4 @@
 import itertools
-import uuid
 
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
@@ -11,7 +10,7 @@ from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel, BaseCommentModel
 from ryhom.tags.models import Tag
 
-from .managers import UserCommentsManager, UserPostsManager
+from .managers import ArticleCommentsManager, ArticleManager
 
 
 class Article(BaseAbstractModel):
@@ -58,7 +57,7 @@ class Article(BaseAbstractModel):
     slug = models.SlugField(default='', blank=True, null=False, unique=True)
 
     objects = models.Manager()
-    user_posts = UserPostsManager()
+    articles = ArticleManager()
 
     class Meta:
         verbose_name = 'Article'
@@ -111,7 +110,7 @@ class ArticleComment(BaseCommentModel):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
 
     objects = models.Manager()
-    article_comments = UserCommentsManager()
+    article_comments = ArticleCommentsManager()
 
     class Meta:
         verbose_name = 'Comment'
