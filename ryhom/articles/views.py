@@ -2,10 +2,10 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 from django.views.generic.edit import CreateView
 
-from .forms import AddArticleForm, AddCommentForm
+from .forms import AddArticleCommentForm, AddArticleForm
 from .models import Article, ArticleComment
 
 
@@ -41,25 +41,6 @@ class AddArticleView(LoginRequiredMixin, CreateView):
         return success_url
 
 
-class UserPostsView(LoginRequiredMixin, ListView):
-    template_name = 'articles/user-posts.html'
-    context_object_name = 'published_articles'
-    model = Article
-
-    def get_context_data(self, **kwargs):
-        # REMEMBER TO ADD MICROPOSTS AS EXTRA CONTEXT AS WELL!
-        context = super(UserPostsView, self).get_context_data(**kwargs)
-        context.update({
-            'saved_articles': Article.user_posts.draft_articles(self.request.user),
-            'waiting_review_articles': Article.user_posts.waiting_review_articles(self.request.user),
-            #'even_more_context': Model.objects.all(),
-        })
-        return context
-
-    def get_queryset(self):
-        return Article.user_posts.published_articles(self.request.user)
-
-
 class ArticleDetailView(DetailView):
     template_name = 'articles/article-detail.html'
     model = Article
@@ -80,15 +61,15 @@ class ArticleDetailView(DetailView):
         connected_comments = ArticleComment.objects.filter(article=self.article)
         number_of_comments = connected_comments.count()
 
-        context['article_author'] = self.article.author.slug
+        context['article_author'] = self.article.author
         context['comments'] = connected_comments
         context['nro_of_comments'] = number_of_comments
-        context['comment_form'] = AddCommentForm()
+        context['comment_form'] = AddArticleCommentForm()
         return context
 
     def post(self , request , *args , **kwargs):
         if self.request.method == 'POST':
-            form = AddCommentForm(self.request.POST)
+            form = AddArticleCommentForm(self.request.POST)
             if form.is_valid():
                 comment = form.cleaned_data['comment']
                 try:
