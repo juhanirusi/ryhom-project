@@ -4,7 +4,7 @@ from .views import (AccountSettingsView, ActivateAccountView, ChangeEmailView,
                     ChangePasswordView, LoginUserView, LogoutUserView,
                     RegisterView, ResetPasswordConfirmationView,
                     ResetPasswordDoneView, ResetPasswordMessageView,
-                    ResetPasswordView, UserProfileView)
+                    ResetPasswordView, UserPostsView, UserProfileView)
 
 app_name = 'accounts'
 
@@ -51,9 +51,14 @@ urlpatterns = [
     ),
 
     path(
-        'settings',
+        'account/settings',
         AccountSettingsView.as_view(),
         name='account_settings'
+    ),
+    path(
+        'account/my-posts',
+        UserPostsView.as_view(),
+        name='my_posts'
     ),
     path(
         '<slug:user_profile_slug>',
@@ -62,12 +67,12 @@ urlpatterns = [
     ),
 
     path(
-        'settings/password/change',
+        'account/settings/password/change',
         ChangePasswordView.as_view(),
         name='change_password'
     ),
     path(
-        'settings/email/change',
+        'account/settings/email/change',
         ChangeEmailView.as_view(),
         name='change_email'
     ),
