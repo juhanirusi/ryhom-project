@@ -24,19 +24,16 @@
   <p>{{ article.summary }}</p>
 
   {% if article.author.profile_image.url != '' %}
-    <img src="{{ article.author.profile_image.url }}" width="100" height="100"></img>
+    <img src="{{ article.author.profile_image.url }}" alt="{{ article.author.name }}'s profile image" width="100" height="100"></img>
   {% endif %}
   <p>By <a href="{{ article.author.get_absolute_url }}">{{ article.author }}</a></p>
 
   {% if article.image.url != '' %}
-    <img src="{{ article.image.url }}" width="800" height="500"></img>
+    <img src="{{ article.image.url }}" alt="Featured image for article, {{ article.title }}" width="800" height="500"></img>
   {% endif %}
   <article>
     {{ article.content | safe }}
   </article>
-
-
-
 
   <h2> Comments </h2>
 

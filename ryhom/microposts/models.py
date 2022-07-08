@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-#from django.urls import reverse
+from django.urls import reverse
 from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel, BaseCommentModel
 from ryhom.core.utils import random_string_generator
@@ -44,8 +44,8 @@ class Micropost(BaseAbstractModel):
         super(Micropost, self).save(*args, **kwargs)
 
 
-    # def get_absolute_url(self):
-    #     return reverse('microposts:micropost_detail', kwargs={'micropost_slug': self.slug})
+    def get_absolute_url(self):
+        return reverse('microposts:micropost_detail', kwargs={'micropost_slug': self.slug})
 
 
     def __str__(self):
