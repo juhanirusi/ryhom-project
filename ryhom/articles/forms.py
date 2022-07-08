@@ -37,10 +37,10 @@ class AddArticleForm(ModelForm):
         }
 
 
-class AddCommentForm(ModelForm):
+class AddArticleCommentForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(AddCommentForm, self).__init__(*args, **kwargs)
+        super(AddArticleCommentForm, self).__init__(*args, **kwargs)
         self.fields['comment'].widget.attrs['placeholder'] = 'Add your comment...'
 
     class Meta:
