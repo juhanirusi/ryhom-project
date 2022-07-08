@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (LoginView, LogoutView,
                                        PasswordChangeView,
                                        PasswordResetCompleteView,
@@ -16,7 +17,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from django.views.generic import DetailView, View
+from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import CreateView, UpdateView
 from ryhom.articles.models import Article, ArticleComment
 from ryhom.core.decorators import confirm_password
@@ -152,6 +153,11 @@ class UserProfileView(DetailView):
     template_name = 'accounts/user-profile.html'
 
     # def get_context_data(self, **kwargs):
+
+    # TO GET BOTH ARTICLES & MICROPOSTS TO SAME PAGE...
+    # https://fedingo.com/how-to-combine-two-querysets-in-django/
+    # https://stackoverflow.com/questions/431628/how-can-i-combine-two-or-more-querysets-in-a-django-view
+
     #     # Call the base implementation first to get a context
     #     context = super().get_context_data(**kwargs)
     #     # Add in a QuerySet of all the books
@@ -160,17 +166,40 @@ class UserProfileView(DetailView):
 
     def get_object(self):
         self.user = get_object_or_404(Account, slug=self.kwargs['user_profile_slug'])
-        print(self.user)
         return self.user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        user_posts = Article.user_posts.user_profile_published(self.user)
-        user_comments = ArticleComment.article_comments.user_profile_comments(self.user)
+        user_posts = Article.articles.by_author(self.user).published_articles()
+        user_comments = ArticleComment.article_comments.user_comments(self.user)
         context['user_posts'] = user_posts
         context['user_comments'] = user_comments
 
+        return context
+
+
+class UserPostsView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/user-posts.html'
+    context_object_name = 'published_articles'
+    model = Article
+
+    def get_queryset(self):
+        return Article.articles.by_author(self.request.user).published_articles()
+
+    def get_context_data(self, **kwargs):
+        # REMEMBER TO ADD MICROPOSTS AS EXTRA CONTEXT AS WELL!
+
+        # TO GET BOTH ARTICLES & MICROPOSTS TO SAME PAGE...
+        # https://fedingo.com/how-to-combine-two-querysets-in-django/
+        # https://stackoverflow.com/questions/431628/how-can-i-combine-two-or-more-querysets-in-a-django-view
+
+        context = super(UserPostsView, self).get_context_data(**kwargs)
+        context.update({
+            'saved_articles': Article.articles.draft_articles(),
+            'waiting_review_articles': Article.articles.waiting_review(),
+            #'even_more_context': Model.objects.all(),
+        })
         return context
 
 
