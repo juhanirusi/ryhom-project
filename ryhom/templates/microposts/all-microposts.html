@@ -1,0 +1,23 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}All Posts{% endblock title %}
+
+{% block content %}
+  <h1>All Microposts</h1>
+
+  {% for micropost in microposts %}
+    <a href="{{ micropost.get_absolute_url }}"><h2>{{ micropost.title }}</h2></a>
+
+    {% if micropost.image.url != '' %}
+      <a href="{{ micropost.get_absolute_url }}"><img src="{{ micropost.image.url }}" alt="{{ micropost.title }}"></a>
+    {% endif %}
+
+    <p>{{ micropost.content }}</p>
+
+    <p><a href="{{ micropost.get_absolute_url }}">{{ micropost.comment_count}} Comments</a></p>
+    {% for tag in micropost.tags.all %}
+      <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
+    {% endfor %}
+  {% endfor %}
+
+{% endblock content%}
