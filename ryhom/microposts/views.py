@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView
 
 from .forms import AddMicropostCommentForm, AddMicropostForm
@@ -33,6 +34,22 @@ class AddMicropostView(LoginRequiredMixin, CreateView):
             )
 
         return success_url
+
+
+class AllMicropostsListView(ListView):
+    template_name = 'microposts/all-microposts.html'
+    context_object_name = 'microposts'
+    model = Micropost
+    ordering = '-created'
+    queryset = Micropost.objects.filter(published=True).annotate(
+        comment_count=Count('micropostcomment')
+    )
+    # With annotate + Count, we can add the number of comments a
+    # specific micropost has into the context data.
+
+
+class MicropostByTagListView(ListView):
+    pass
 
 
 class MicropostDetailView(DetailView):
@@ -74,7 +91,7 @@ class MicropostDetailView(DetailView):
             new_comment = MicropostComment(
                 comment=comment,
                 author=self.request.user,
-                article=self.get_object(),
+                post=self.get_object(),
                 parent=parent
             )
 
