@@ -13,7 +13,6 @@ class Micropost(BaseAbstractModel):
     image = models.ImageField(upload_to='micropost-images/')
     image_credit = models.CharField(blank=True, max_length=50)
     content = models.TextField(max_length=1700)
-    categories = models.ManyToManyField(Category, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
     likes = models.PositiveIntegerField(default=0)
     published = models.BooleanField(default=False)
