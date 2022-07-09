@@ -8,13 +8,13 @@ from .models import Micropost, MicropostComment
 # Register your models here.
 
 
-@admin.action(description='Publish Article(s)')
+@admin.action(description='Publish Post(s)')
 def publish_post(modeladmin, request, queryset):
     queryset.update(published=True)
     messages.success(request, "Selected Post(s) Are Now Published!")
 
 
-@admin.action(description='Unpublish Article(s)')
+@admin.action(description='Unpublish Post(s)')
 def unpublish_post(modeladmin, request, queryset):
     queryset.update(published=False)
     messages.success(request, "Selected Post(s) Are Now Unpublished!")
@@ -35,7 +35,7 @@ class MicropostAdmin(admin.ModelAdmin):
         (_('Common Info'), {'fields': ('title', 'author', 'created', 'modified',)}),
         (_('Featured Image'), {'fields': ('image', 'image_credit',)}),
         (_('Post Text'), {'fields': ('content',)}),
-        (_('Categorizing'), {'fields': ('categories', 'tags',)}),
+        (_('Tags'), {'fields': ('tags',)}),
         (_('Slug'), {'fields': ('slug',)}),
     )
 
