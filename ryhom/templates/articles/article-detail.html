@@ -14,7 +14,7 @@
 
   <p>Tags:
   {% for tag in article.tags.all %}
-    <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
+    <a href="{% url 'tags:articles_by_tag' tag_slug=tag.slug %}">{{ tag.name }}</a>
   {% endfor %}
   </p>
 
