@@ -22,7 +22,8 @@ class RegisterForm(UserCreationForm):
         super().__init__(*args, **kwargs)
 
         self.fields['email'].widget.attrs['placeholder'] = 'Enter email'
-        self.fields['name'].widget.attrs['placeholder'] = 'First and last name'
+        self.fields['name'].widget.attrs[
+            'placeholder'] = 'First and last name'
         self.fields['password1'].widget.attrs['placeholder'] = '********'
         self.fields['password2'].widget.attrs['placeholder'] = '********'
 
@@ -60,7 +61,8 @@ class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['username'].widget.attrs['placeholder'] = 'Enter email or username'
+        self.fields['username'].widget.attrs[
+            'placeholder'] = 'Enter email or username'
         self.fields['password'].widget.attrs['placeholder'] = 'Enter password'
 
         self.fields['username'].label = 'Email or username'
@@ -97,10 +99,14 @@ class AccountSettingsForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['name'].widget.attrs['placeholder'] = 'First and last name'
-        self.fields['bio'].widget.attrs['placeholder'] = 'Eat, sleep, garden.'
-        self.fields['username'].widget.attrs['placeholder'] = 'Enter username'
-        self.fields['website'].widget.attrs['placeholder'] = 'Enter website URL'
+        self.fields['name'].widget.attrs[
+            'placeholder'] = 'First and last name'
+        self.fields['bio'].widget.attrs[
+            'placeholder'] = 'Eat, sleep, garden.'
+        self.fields['username'].widget.attrs[
+            'placeholder'] = 'Enter username'
+        self.fields['website'].widget.attrs[
+            'placeholder'] = 'Enter website URL'
 
     password = None
 
@@ -144,7 +150,7 @@ class AccountSettingsForm(UserChangeForm):
 
         if len(username) < 3:
             raise ValidationError(
-                'Give yourself a username that is at least 3 characters long!'
+                'Give yourself a username that\'s at least 3 characters long!'
             )
         return username
 
@@ -225,9 +231,12 @@ class ChangePasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['old_password'].widget.attrs['placeholder'] = 'Enter old password'
-        self.fields['new_password1'].widget.attrs['placeholder'] = 'Enter a new password'
-        self.fields['new_password2'].widget.attrs['placeholder'] = 'Enter new password again'
+        self.fields['old_password'].widget.attrs[
+            'placeholder'] = 'Enter old password'
+        self.fields['new_password1'].widget.attrs[
+            'placeholder'] = 'Enter a new password'
+        self.fields['new_password2'].widget.attrs[
+            'placeholder'] = 'Enter new password again'
 
         self.fields['old_password'].label = 'Your old password'
         self.fields['new_password1'].label = 'Pick a new password'
@@ -253,8 +262,10 @@ class SetNewPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['new_password1'].widget.attrs['placeholder'] = 'Enter a new password'
-        self.fields['new_password2'].widget.attrs['placeholder'] = 'Enter new password again'
+        self.fields['new_password1'].widget.attrs[
+            'placeholder'] = 'Enter a new password'
+        self.fields['new_password2'].widget.attrs[
+            'placeholder'] = 'Enter new password again'
 
         self.fields['new_password1'].label = 'Pick a new password'
         self.fields['new_password2'].label = 'Re-enter new password'
