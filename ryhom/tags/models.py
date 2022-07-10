@@ -38,7 +38,10 @@ class Tag(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('tags:tag_detail', kwargs={'tag_slug': self.slug})
+        return reverse('tags:microposts_by_tag', kwargs={'tag_slug': self.slug})
+        # If statement with...
+        #return reverse('tags:articles_by_tag', kwargs={'tag_slug': self.slug})
+        # when clicking tag in article detail page.
 
 
     def __str__(self):
