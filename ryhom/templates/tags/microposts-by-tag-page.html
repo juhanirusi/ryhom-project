@@ -1,0 +1,49 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}{{ tag.name }} - {{ request.META.HTTP_HOST }}{% endblock title %}
+{% block meta_description %}{{ tag.description | slice:':160' }}{% endblock meta_description %}
+
+{% block content %}
+
+  <h1>Microposts In Tag {{ tag.name }}</h1>
+  <p>{{ tag.description }}</p>
+
+
+    {% for micropost in microposts_in_tag %}
+
+    <a href="{{ micropost.get_absolute_url }}"><h2>{{ micropost.title }}</h2></a>
+
+    {% if micropost.image.url != '' %}
+      <a href="{{ micropost.get_absolute_url }}"><img src="{{ micropost.image.url }}" alt="{{ micropost.title }}"></a>
+    {% endif %}
+
+    <p>{{ micropost.content }}</p>
+
+    <p><a href="{{ micropost.get_absolute_url }}">{{ micropost.comment_count}} Comments</a></p>
+    {% for tag in micropost.tags.all %}
+      <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
+    {% endfor %}
+    {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  {% comment %} {% for micropost in microposts_in_tag %}
+    <p>{{ micropost.title }}</p>
+  {% endfor %} {% endcomment %}
+
+{% endblock content %}

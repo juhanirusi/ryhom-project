@@ -1,0 +1,15 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}{{ tag.name }} - {{ request.META.HTTP_HOST }}{% endblock title %}
+{% block meta_description %}{{ tag.description | slice:':160' }}{% endblock meta_description %}
+
+{% block content %}
+
+  <h1>Articles In Tag {{ tag.name }}</h1>
+  <p>{{ tag.description }}</p>
+
+  {% for article in articles_in_tag %}
+    <p>{{ article.title }}</p>
+  {% endfor %}
+
+{% endblock content %}
