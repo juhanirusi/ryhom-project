@@ -41,15 +41,11 @@ class AllMicropostsListView(ListView):
     context_object_name = 'microposts'
     model = Micropost
     ordering = '-created'
+    # With annotate + Count, we can add the number of comments a
+    # specific micropost has into the context data.
     queryset = Micropost.objects.filter(published=True).annotate(
         comment_count=Count('micropostcomment')
     )
-    # With annotate + Count, we can add the number of comments a
-    # specific micropost has into the context data.
-
-
-class MicropostByTagListView(ListView):
-    pass
 
 
 class MicropostDetailView(DetailView):
