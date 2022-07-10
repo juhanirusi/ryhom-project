@@ -1,13 +1,14 @@
 from django.views.generic import ListView
 from ryhom.articles.models import Article
+from ryhom.microposts.models import Micropost
 
 from .models import Tag
 
 
-class TagDetailView(ListView):
+class ArticlesByTagListView(ListView):
     model = Tag
     context_object_name = 'tag'
-    template_name = 'tags/tag-page.html'
+    template_name = 'tags/articles-by-tag-page.html'
 
     def get_queryset(self):
         tag = Tag.objects.get(slug=self.kwargs['tag_slug'])
@@ -15,6 +16,22 @@ class TagDetailView(ListView):
         return tag
 
     def get_context_data(self, **kwargs):
-        context = super(TagDetailView, self).get_context_data(**kwargs)
-        context['posts_in_tag'] = self.queryset
+        context = super(ArticlesByTagListView, self).get_context_data(**kwargs)
+        context['articles_in_tag'] = self.queryset
+        return context
+
+
+class MicropostsByTagListView(ListView):
+    model = Tag
+    context_object_name = 'tag'
+    template_name = 'tags/microposts-by-tag-page.html'
+
+    def get_queryset(self):
+        tag = Tag.objects.get(slug=self.kwargs['tag_slug'])
+        self.queryset = Micropost.objects.filter(tags=tag)
+        return tag
+
+    def get_context_data(self, **kwargs):
+        context = super(MicropostsByTagListView, self).get_context_data(**kwargs)
+        context['microposts_in_tag'] = self.queryset
         return context
