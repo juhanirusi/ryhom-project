@@ -7,24 +7,31 @@
   <h1>Your Posts</h1>
   <p>Here are all the articles and microposts published or saved by you...</p>
 
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message | safe }}</p>
+    {% endfor %}
+  {% endif %}
+
   <h2>Published Posts</h2>
   {% for article in published_articles %}
     <li>
-      {{ article.title }}
+      <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
+      <a href="{% url 'articles:delete_article' article_uuid=article.uuid %}">Delete This Article</a>
     </li>
   {% endfor %}
 
   <h2>Your Drafts</h2>
   {% for article in saved_articles %}
     <li>
-      {{ article.title }}
+      <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
     </li>
   {% endfor %}
 
   <h2>Waiting For Review</h2>
   {% for article in waiting_review_articles %}
     <li>
-      {{ article.title }}
+      <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
     </li>
   {% endfor %}
 
