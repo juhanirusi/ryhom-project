@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from ryhom.articles.models import Article
 from ryhom.microposts.models import Micropost
@@ -11,7 +12,7 @@ class ArticlesByTagListView(ListView):
     template_name = 'tags/articles-by-tag-page.html'
 
     def get_queryset(self):
-        tag = Tag.objects.get(slug=self.kwargs['tag_slug'])
+        tag = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
         self.queryset = Article.objects.filter(tags=tag)
         return tag
 
@@ -27,7 +28,7 @@ class MicropostsByTagListView(ListView):
     template_name = 'tags/microposts-by-tag-page.html'
 
     def get_queryset(self):
-        tag = Tag.objects.get(slug=self.kwargs['tag_slug'])
+        tag = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
         self.queryset = Micropost.objects.filter(tags=tag)
         return tag
 
