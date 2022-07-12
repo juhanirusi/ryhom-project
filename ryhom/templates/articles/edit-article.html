@@ -1,0 +1,54 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Edit Article{% endblock title %}
+
+{% block content %}
+  <h1>Edit Article...</h1>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message | safe }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <form action="" enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+
+    {{ form.media }}
+
+    <p>{{ form.title.label_tag }}</p>
+    {{ form.title }}
+    <p><em>{{ form.title.help_text }}</em></p>
+    {{ form.title.errors }}
+
+    <p>{{ form.summary.label_tag }}</p>
+    {{ form.summary }}
+    <p><em>{{ form.summary.help_text }}</em></p>
+    {{ form.summary.errors }}
+
+    <p>{{ form.image.label_tag }}</p>
+    {{ form.image }}
+    <p><em>{{ form.image.help_text }}</em></p>
+    {{ form.image.errors }}
+
+    <p>{{ form.image_credit.label_tag }}</p>
+    {{ form.image_credit }}
+    <p><em>{{ form.image_credit.help_text }}</em></p>
+    {{ form.image_credit.errors }}
+
+    <p>{{ form.content.label_tag }}</p>
+    {{ form.content }}
+    <p><em>{{ form.content.help_text }}</em></p>
+    {{ form.content.errors }}
+
+    <button name="save_for_later" type="submit">Save</button>
+
+    <button name="submit_for_review" type="submit">Submit For Review</button>
+
+  </form>
+
+{% endblock content %}
