@@ -25,9 +25,18 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
+    # CHECK OUT THE BOTTOM OF THIS FILE FOR MORE INFO!
     # @property
     # def children(self):
     #     return self.category_set.all().order_by("title") <-- RESEARCH MORE OR USE A MODEL MANAGER!
+    #     return Category.objects.filter(parent=self).all()
+
+
+    # @property
+    # def is_parent_category(self):
+    #     if self.parent is None:
+    #         return True
+    #     return False
 
 
     def _generate_slug(self):
