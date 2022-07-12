@@ -29,7 +29,7 @@ class Article(BaseAbstractModel):
         LESSON_LEARNED = 'Lesson-learned', 'Lesson-learned'
         PEOPLE_SAYING = 'What People say', 'What People say'
 
-    class ArticleStatus(models.TextChoices):
+    class Status(models.TextChoices):
         WRITER_SAVED_FOR_LATER = 'Saved For Later', 'Saved For Later'
         WRITER_WANTS_TO_PUBLISH = 'Wants To Publish', 'Wants To Publish'
         PUBLISHED = 'Published', 'Published'
@@ -50,11 +50,11 @@ class Article(BaseAbstractModel):
         default=Type.ARTICLE
     )
     featured = models.BooleanField(default=False)
-    #likes = models.PositiveIntegerField(default=0)
-    status = models.CharField(max_length=16, choices=ArticleStatus.choices,
-        default=ArticleStatus.WRITER_SAVED_FOR_LATER
+    status = models.CharField(max_length=16, choices=Status.choices,
+        default=Status.WRITER_SAVED_FOR_LATER
     )
-    slug = models.SlugField(default='', blank=True, null=False, unique=True)
+    slug = models.SlugField(
+        default='', max_length=255, blank=True, null=False, unique=True)
 
     objects = models.Manager()
     articles = ArticleManager()
@@ -63,11 +63,8 @@ class Article(BaseAbstractModel):
         verbose_name = 'Article'
         verbose_name_plural = 'Articles'
         ordering = ['-created', '-modified']
-        unique_together = ('author', 'title') # 1 author can't have multiple articles with same title
-
-
-    # def total_likes(self):
-    #     return self.likes.count()
+        # 1 author can't have multiple articles with same title
+        unique_together = ('author', 'title')
 
 
     def _create_slug(self):
@@ -99,7 +96,9 @@ class Article(BaseAbstractModel):
 
 
     def get_absolute_url(self):
-        return reverse('articles:article_detail', kwargs={'article_slug': self.slug})
+        return reverse(
+            'articles:article_detail', kwargs={'article_slug': self.slug}
+        )
 
 
     def __str__(self):
