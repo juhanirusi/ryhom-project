@@ -36,6 +36,26 @@ class AddMicropostView(LoginRequiredMixin, CreateView):
         return success_url
 
 
+# class DeleteArticleView(LoginRequiredMixin, DeleteView):
+#     model = Article
+#     template_name = 'articles/delete-article.html'
+#     #success_url = reverse_lazy('accounts:user_posts')-
+#     success_url = reverse_lazy('accounts:my_posts')
+#     success_message = 'The article has been deleted'
+
+#     def get_object(self):
+#         # Only the rightful author of the article will get to
+#         # edit it, otherwise show a 404 error.
+#         return get_object_or_404(
+#             Article.objects.filter(author=self.request.user),
+#             uuid=self.kwargs['article_uuid']
+#         )
+
+#     def form_valid(self, form):
+#         messages.success(self.request, self.success_message)
+#         return super().form_valid(form)
+
+
 class AllMicropostsListView(ListView):
     template_name = 'microposts/all-microposts.html'
     context_object_name = 'microposts'

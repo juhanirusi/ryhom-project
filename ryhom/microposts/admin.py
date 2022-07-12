@@ -8,20 +8,20 @@ from .models import Micropost, MicropostComment
 # Register your models here.
 
 
-@admin.action(description='Publish Post(s)')
+@admin.action(description='Publish Micropost(s)')
 def publish_post(modeladmin, request, queryset):
     queryset.update(published=True)
-    messages.success(request, "Selected Post(s) Are Now Published!")
+    messages.success(request, "Selected Micropost(s) Are Now Published!")
 
 
-@admin.action(description='Unpublish Post(s)')
+@admin.action(description='Unpublish Micropost(s)')
 def unpublish_post(modeladmin, request, queryset):
     queryset.update(published=False)
-    messages.success(request, "Selected Post(s) Are Now Unpublished!")
+    messages.success(request, "Selected Micropost(s) Are Now Unpublished!")
 
 
 class MicropostAdmin(admin.ModelAdmin):
-    """Define the article page customization."""
+    """Define the micropost page customization."""
     ordering = ['-modified']
     list_display = ['title', 'author', 'likes', 'published']
     list_filter = ('author', 'likes', 'published',)

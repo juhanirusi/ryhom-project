@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel, BaseCommentModel
 from ryhom.core.utils import random_string_generator
 from ryhom.tags.models import Tag

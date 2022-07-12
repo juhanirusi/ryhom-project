@@ -47,7 +47,8 @@ class AddMicropostCommentForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AddMicropostCommentForm, self).__init__(*args, **kwargs)
-        self.fields['comment'].widget.attrs['placeholder'] = 'Add your comment...'
+        self.fields['comment'].widget.attrs[
+            'placeholder'] = 'Add your comment...'
 
     class Meta:
         model = MicropostComment
