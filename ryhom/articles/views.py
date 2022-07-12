@@ -3,19 +3,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .forms import AddArticleCommentForm, AddArticleForm
+from .forms import AddArticleCommentForm, AddEditArticleForm
 from .models import Article, ArticleComment
 
 
 class AddArticleView(LoginRequiredMixin, CreateView):
-    form_class = AddArticleForm
+    form_class = AddEditArticleForm
     template_name = 'articles/add-article.html'
 
     def get_initial(self):
         author = self.request.user
-        return {'author': author,}
+        return {'author': author}
 
     def form_valid(self, form):
         if 'save_for_later' in self.request.POST:
@@ -33,24 +33,69 @@ class AddArticleView(LoginRequiredMixin, CreateView):
         if 'save_for_later' in self.request.POST:
             success_url = reverse_lazy('articles:add_article')
         else: #'submit_for_review' in self.request.POST:
-            success_url = reverse_lazy(
-                'accounts:user_profile',
-                args=[self.request.user.slug]
-            )
+            success_url = reverse_lazy('accounts:my_posts')
 
         return success_url
+
+
+class EditArticleView(LoginRequiredMixin, UpdateView):
+    model = Article
+    template_name = 'articles/edit-article.html'
+    form_class = AddEditArticleForm
+
+    def get_object(self):
+        # Only the rightful author of the article will get to
+        # edit it, otherwise show a 404 error.
+        return get_object_or_404(
+            Article.objects.filter(author=self.request.user),
+            uuid=self.kwargs['article_uuid']
+        )
+
+    def form_valid(self, form):
+        if 'save_for_later' in self.request.POST:
+            form.instance.status = 'Saved For Later'
+            messages.success(self.request, 'Your article was saved!')
+        else: #'submit_for_review' in self.request.POST:
+            form.instance.status = 'Wants To Publish'
+            messages.success(self.request,
+                'Good job, we\'ll review your article, \
+                and notify you once it\'s published!')
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        if 'save_for_later' in self.request.POST:
+            success_url = reverse_lazy('articles:edit_article', args=[self.object.uuid])
+        else: #'submit_for_review' in self.request.POST:
+            success_url = reverse_lazy('accounts:my_posts')
+
+        return success_url
+
+
+class DeleteArticleView(LoginRequiredMixin, DeleteView):
+    model = Article
+    template_name = 'articles/delete-article.html'
+    #success_url = reverse_lazy('accounts:user_posts')-
+    success_url = reverse_lazy('accounts:my_posts')
+    success_message = 'The article has been deleted'
+
+    def get_object(self):
+        # Only the rightful author of the article will get to
+        # edit it, otherwise show a 404 error.
+        return get_object_or_404(
+            Article.objects.filter(author=self.request.user),
+            uuid=self.kwargs['article_uuid']
+        )
+
+    def form_valid(self, form):
+        messages.success(self.request, self.success_message)
+        return super().form_valid(form)
 
 
 class ArticleDetailView(DetailView):
     template_name = 'articles/article-detail.html'
     model = Article
     queryset = Article.objects.filter(status='Published')
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(ArticleDetailView, self).get_context_data(**kwargs)
-    #     context['author'] = Article.objects.filter(slug=self.object.author).first()
-    #     context['slug'] = Article.objects.filter(slug=self.object.slug).first()
-    #     return context
 
     def get_object(self):
         self.article = get_object_or_404(self.queryset, slug=self.kwargs['article_slug'])
@@ -86,22 +131,6 @@ class ArticleDetailView(DetailView):
 
             new_comment.save()
             return redirect(self.request.path_info)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # class AddCommentLike(LoginRequiredMixin, View):
