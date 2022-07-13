@@ -75,7 +75,6 @@ class EditArticleView(LoginRequiredMixin, UpdateView):
 class DeleteArticleView(LoginRequiredMixin, DeleteView):
     model = Article
     template_name = 'articles/delete-article.html'
-    #success_url = reverse_lazy('accounts:user_posts')-
     success_url = reverse_lazy('accounts:my_posts')
     success_message = 'The article has been deleted'
 
