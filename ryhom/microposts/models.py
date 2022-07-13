@@ -5,6 +5,8 @@ from ryhom.core.models import BaseAbstractModel, BaseCommentModel
 from ryhom.core.utils import random_string_generator
 from ryhom.tags.models import Tag
 
+from .managers import MicropostManager
+
 
 class Micropost(BaseAbstractModel):
     title = models.CharField(max_length=255)
@@ -13,9 +15,11 @@ class Micropost(BaseAbstractModel):
     image_credit = models.CharField(blank=True, max_length=50)
     content = models.TextField(max_length=1700)
     tags = models.ManyToManyField(Tag, blank=True)
-    likes = models.PositiveIntegerField(default=0)
     published = models.BooleanField(default=False)
     slug = models.SlugField(default='', blank=True, null=False, unique=True)
+
+    objects = models.Manager()
+    microposts = MicropostManager()
 
     class Meta:
         verbose_name = 'Micropost'
