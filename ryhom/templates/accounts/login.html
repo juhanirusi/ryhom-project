@@ -7,11 +7,22 @@
   <h1>Log In</h1>
   <p>Or <a href="{% url 'accounts:create_account' %}">create an account</a> to make your own posts</p>
 
-    {% if messages %}
-      {% for message in messages %}
-        <p>{{ message | safe }}</p>
-      {% endfor %}
-    {% endif %}
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message | safe }}</p>
+    {% endfor %}
+  {% endif %}
+
+  {% for key, key_errors in form.errors.as_data.items %}
+    {% for error in key_errors %}
+      {% if error.code == 'inactive_account' %}
+        <p>Your account is still inactive! Click the confirmation link
+          sent to your email to activate it, or <a href="{% url 'accounts:resend_activation_email' %}">
+          re-send the email</a>.
+        </p>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
 
   <form action="" method="POST">
     {% csrf_token %}
