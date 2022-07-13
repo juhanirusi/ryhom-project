@@ -51,6 +51,10 @@ class RegisterForm(UserCreationForm):
         return self.cleaned_data['email'].lower()
 
 
+class ResendActivationEmailForm(forms.Form):
+    email = forms.EmailField(required=True)
+
+
 class LoginForm(AuthenticationForm):
     """
     Our custom login form that subclasses Django's AuthenticationForm,
@@ -79,11 +83,7 @@ class LoginForm(AuthenticationForm):
         verifying the account.
         """
         if not user.is_active:
-            raise ValidationError('Your account is still inactive! \
-                Click the confirmation link sent to your email to \
-                activate it.',
-                code='inactive'
-            )
+            raise ValidationError('', code='inactive_account')
 
 
 class AccountSettingsForm(UserChangeForm):
