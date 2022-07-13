@@ -1,0 +1,16 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Delete {{ micropost.title }}{% endblock title %}
+
+{% block content %}
+  <h1>Are You Sure You Want To Delete - {{ micropost.title }}</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <p>Confirm the deletion of "{{ micropost.title }}"</p>
+
+    <input type="submit" value="Delete">
+    <button type="button" onclick="location.href='{% url 'accounts:my_posts' %}'">Cancel</button>
+  </form>
+{% endblock %}
