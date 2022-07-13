@@ -1,0 +1,28 @@
+{% extends 'boilerplate.html' %}
+
+{% block title %}Resend Email Verification{% endblock title %}
+
+{% block content %}
+
+  <h1>Resend the email verification link</h1>
+
+  <p>
+    We sent you a message with a link to activate your account.
+    If you didn't receive it, you can re-enter your email address,
+    and we'll send you a new activation link.
+  </p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message | safe }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <a href="{% url 'accounts:login' %}">&#8592; Back to login</a>
+      <button type="submit">Send Verification Link</button>
+  </form>
+
+{% endblock content %}
