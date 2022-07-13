@@ -22,9 +22,14 @@
   {% endif %}
   <p>{{ account.bio }}</p>
 
-  <h2>Published Posts</h2>
-  {% for post in user_posts %}
-    <p>{{ post.title }}</p>
+  <h2>Published Articles</h2>
+  {% for article in user_articles %}
+    <p>{{ article.title }}</p>
+  {% endfor %}
+
+  <h2>Published Microposts</h2>
+  {% for micropost in user_microposts %}
+    <p>{{ micropost.title }}</p>
   {% endfor %}
 
   <h2>Recent Comments</h2>

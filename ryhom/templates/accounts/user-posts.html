@@ -13,7 +13,7 @@
     {% endfor %}
   {% endif %}
 
-  <h2>Published Posts</h2>
+  <h2>Published Articles</h2>
   {% for article in published_articles %}
     <li>
       <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
@@ -21,17 +21,19 @@
     </li>
   {% endfor %}
 
-  <h2>Your Drafts</h2>
+  <h2>Your Draft Articles</h2>
   {% for article in saved_articles %}
     <li>
       <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
+      <a href="{% url 'articles:delete_article' article_uuid=article.uuid %}">Delete This Article</a>
     </li>
   {% endfor %}
 
-  <h2>Waiting For Review</h2>
-  {% for article in waiting_review_articles %}
+  <h2>Published Microposts</h2>
+  {% for micropost in published_microposts %}
     <li>
-      <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
+      {{ micropost.title }}
+      <a href="{% url 'microposts:delete_post' micropost_uuid=micropost.uuid %}">Delete This Micropost</a>
     </li>
   {% endfor %}
 
