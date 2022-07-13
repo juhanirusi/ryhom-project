@@ -2,9 +2,10 @@ from django.urls import path
 
 from .views import (AccountSettingsView, ActivateAccountView, ChangeEmailView,
                     ChangePasswordView, LoginUserView, LogoutUserView,
-                    RegisterView, ResetPasswordConfirmationView,
-                    ResetPasswordDoneView, ResetPasswordMessageView,
-                    ResetPasswordView, UserPostsView, UserProfileView)
+                    RegisterView, ResendActivationEmailView,
+                    ResetPasswordConfirmationView, ResetPasswordDoneView,
+                    ResetPasswordMessageView, ResetPasswordView, UserPostsView,
+                    UserProfileView)
 
 app_name = 'accounts'
 
@@ -18,6 +19,11 @@ urlpatterns = [
         'auth/activate/<uidb64>/<token>',
         ActivateAccountView.as_view(),
         name='activate'
+    ),
+    path(
+        'auth/resend-activitation-email',
+        ResendActivationEmailView.as_view(),
+        name='resend_activation_email'
     ),
     path(
         'auth/login',
