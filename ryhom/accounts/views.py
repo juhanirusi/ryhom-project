@@ -17,15 +17,16 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from django.views.generic import DetailView, ListView, View
+from django.views.generic import DetailView, FormView, ListView, View
 from django.views.generic.edit import CreateView, UpdateView
 from ryhom.articles.models import Article, ArticleComment
 from ryhom.core.decorators import confirm_password
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
+from ryhom.microposts.models import Micropost
 
 from .forms import (AccountSettingsForm, ChangeEmailForm, ChangePasswordForm,
                     ForgotPasswordForm, LoginForm, RegisterForm,
-                    SetNewPasswordForm)
+                    ResendActivationEmailForm, SetNewPasswordForm)
 from .models import Account
 from .tokens import account_token_generator
 from .utils import send_registration_confirm_email
@@ -72,6 +73,45 @@ class RegisterView(RedirectAuthenticatedUserMixin, CreateView):
         )
         messages.error(self.request, error_message)
         return super().form_invalid(form)
+
+
+class ResendActivationEmailView(RedirectAuthenticatedUserMixin, FormView):
+    template_name = 'accounts/resend-verification-email.html'
+    form_class = ResendActivationEmailForm
+    success_url = reverse_lazy('accounts:resend_activation_email')
+
+    def form_valid(self, form):
+        email_input = form.cleaned_data['email']
+        if Account.objects.filter(email=email_input).exists():
+            user = Account.objects.get(email=email_input)
+            if not user.is_active:
+                self.send_email_to_user(user, email_input)
+            else:
+                error_message = (
+                    'This account has already been activated!'
+                )
+                messages.warning(self.request, error_message)
+        else:
+            error_message = (
+                'Account with this email doesn\'t exist'
+            )
+            messages.warning(self.request, error_message)
+
+        return super().form_valid(form)
+
+    def send_email_to_user(self, user, to_email):
+        try:
+            send_registration_confirm_email(self, user, to_email)
+            success_message = (f'A new verification link has been sent to \
+                                <b>{to_email}</b>. Click it to activate \
+                                your account!')
+            response = messages.success(self.request, success_message)
+        except (SMTPException, socket.gaierror):
+            error_message = 'There was an error connecting to the email \
+                            server, this is likely our fault. Please try \
+                            resending the verification email later.'
+            response = messages.error(self.request, error_message)
+        return response
 
 
 class ActivateAccountView(View):
@@ -152,18 +192,6 @@ class UserProfileView(DetailView):
     model = Account
     template_name = 'accounts/user-profile.html'
 
-    # def get_context_data(self, **kwargs):
-
-    # TO GET BOTH ARTICLES & MICROPOSTS TO SAME PAGE...
-    # https://fedingo.com/how-to-combine-two-querysets-in-django/
-    # https://stackoverflow.com/questions/431628/how-can-i-combine-two-or-more-querysets-in-a-django-view
-
-    #     # Call the base implementation first to get a context
-    #     context = super().get_context_data(**kwargs)
-    #     # Add in a QuerySet of all the books
-    #     context['book_list'] = Book.objects.all()
-    #     return context
-
     def get_object(self):
         self.user = get_object_or_404(Account, slug=self.kwargs['user_profile_slug'])
         return self.user
@@ -171,9 +199,11 @@ class UserProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        user_posts = Article.articles.by_author(self.user).published_articles()
-        user_comments = ArticleComment.article_comments.user_comments(self.user)
-        context['user_posts'] = user_posts
+        user_articles = Article.articles.by_author(self.user).published_articles()[:10]
+        user_microposts = Micropost.microposts.by_author(self.user).published_microposts()[:10]
+        user_comments = ArticleComment.article_comments.user_comments(self.user)[:10]
+        context['user_articles'] = user_articles
+        context['user_microposts'] = user_microposts
         context['user_comments'] = user_comments
 
         return context
@@ -188,17 +218,10 @@ class UserPostsView(LoginRequiredMixin, ListView):
         return Article.articles.by_author(self.request.user).published_articles()
 
     def get_context_data(self, **kwargs):
-        # REMEMBER TO ADD MICROPOSTS AS EXTRA CONTEXT AS WELL!
-
-        # TO GET BOTH ARTICLES & MICROPOSTS TO SAME PAGE...
-        # https://fedingo.com/how-to-combine-two-querysets-in-django/
-        # https://stackoverflow.com/questions/431628/how-can-i-combine-two-or-more-querysets-in-a-django-view
-
         context = super(UserPostsView, self).get_context_data(**kwargs)
         context.update({
             'saved_articles': Article.articles.draft_articles(),
-            'waiting_review_articles': Article.articles.waiting_review(),
-            #'even_more_context': Model.objects.all(),
+            'published_microposts': Micropost.objects.filter(author=self.request.user),
         })
         return context
 
