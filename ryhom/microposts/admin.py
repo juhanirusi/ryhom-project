@@ -23,8 +23,8 @@ def unpublish_post(modeladmin, request, queryset):
 class MicropostAdmin(admin.ModelAdmin):
     """Define the micropost page customization."""
     ordering = ['-modified']
-    list_display = ['title', 'author', 'likes', 'published']
-    list_filter = ('author', 'likes', 'published',)
+    list_display = ['title', 'author', 'published']
+    list_filter = ('author', 'published',)
     search_fields = ['title', 'content']
     actions = [publish_post, unpublish_post]
     formfield_overrides = {
