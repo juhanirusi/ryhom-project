@@ -1,10 +1,14 @@
 import itertools
 import uuid
+from io import BytesIO
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from PIL import Image
 
 from .managers import AccountManager
 
@@ -43,7 +47,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
         default=Gender.NO_RESPONSE)
     birthday = models.DateField(null=True, blank=True)
     bio = models.CharField(max_length=160, blank=True, default='')
-    profile_image = models.ImageField(blank=True, upload_to='accounts/profile-images/')
+    profile_image = models.ImageField(blank=True,
+        upload_to='accounts/profile-images/')
     website = models.URLField(blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
@@ -60,6 +65,28 @@ class Account(AbstractBaseUser, PermissionsMixin):
         #indexes = [models.Index(fields=['uuid', 'slug'])]
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
+
+    __original_profile_image = None
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_profile_image = self.profile_image
+
+
+    def _resize_profile_image(self, imageField: models.ImageField, size:tuple):
+        img = Image.open(imageField)  # Catch original
+        source_image = img.convert('RGB')
+        source_image.thumbnail(size)  # Resize to size
+        output = BytesIO()
+        source_image.save(output, format='JPEG') # Save resize image to bytes
+        output.seek(0)
+
+        content_file = ContentFile(output.read())  # Read output and create ContentFile in memory
+        file = File(content_file)
+
+        random_name = f'{uuid.uuid4()}.jpeg'
+        imageField.save(random_name, file, save=False)
 
 
     def _create_slug(self):
@@ -82,6 +109,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         """Override save method to generate a URL slug & username"""
+
         if not self.slug:
             self._create_slug()
             if not self.username:
@@ -105,11 +133,17 @@ class Account(AbstractBaseUser, PermissionsMixin):
         #     output_size = (300, 300)
         #     img.thumbnail(output_size)
         #     img.save(self.image.path)
+        if self.profile_image != self.__original_profile_image:
+            if self.profile_image != '':
+                self._resize_profile_image(self.profile_image, (500, 500)) # (width, height)
+        self.__original_profile_image = self.profile_image
         super(Account, self).save(*args, **kwargs)
 
 
     def get_absolute_url(self):
-        return reverse('accounts:user_profile', kwargs={'user_profile_slug': self.slug})
+        return reverse(
+            'accounts:user_profile', kwargs={'user_profile_slug': self.slug}
+        )
 
 
     def get_full_name(self):
