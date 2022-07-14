@@ -31,9 +31,8 @@
   {% endfor %}
   </p>
 
-  <h2> Comments </h2>
-
   {% if user.is_authenticated %}
+    <h2>{{ nro_of_comments }} {% if nro_of_comments == 1 %}comment{% else %}comments{% endif %}</h2>
     <form action="" method="POST">
       {% csrf_token %}
       <label for="comment">Type Comment here</label>
@@ -41,7 +40,7 @@
       <input type="submit" value="Post">
     </form>
   {% else %}
-    <h2>You need to <a href="{% url 'accounts:login' %}?next={{ request.path }}">Login</a> to comment</h2>
+    <h2>{{ nro_of_comments }} {% if nro_of_comments == 1 %}comment{% else %}comments{% endif %} - You need to <a href="{% url 'accounts:login' %}?next={{ request.path }}">Login</a> to comment</h2>
   {% endif %}
 
   {% for comment in comments %}
@@ -60,7 +59,7 @@
       <form action="" method="POST">
         {% csrf_token %}
         <label for="comment">Reply here</label>
-        <textarea type="text" name="comment"></textarea>
+        <textarea type="text" name="comment" maxlength="6000"></textarea>
         <input type="hidden" value="{{ comment.pk }}" name="parent">
         <input type="submit" value="Post">
       </form>
