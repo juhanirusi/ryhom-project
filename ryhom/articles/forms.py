@@ -1,5 +1,5 @@
-from django.forms import ModelForm
-from django.forms.widgets import HiddenInput, TextInput
+from django.forms import ModelForm, Textarea
+from django.forms.widgets import HiddenInput
 
 from .models import Article, ArticleComment
 
@@ -55,5 +55,9 @@ class AddArticleCommentForm(ModelForm):
         }
 
         widgets = {
-            'content' : TextInput(),
+            'comment' : Textarea(attrs={
+                # 'rows': '5',
+                # 'cols': '90',
+                'maxlength': '6000',
+            }),
         }
