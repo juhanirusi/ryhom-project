@@ -39,7 +39,7 @@ class BaseCommentModel(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL, null=True
     )
-    comment = models.TextField() # <-- ADD A VALIDATOR TO FORM (50 to 6,000 CHARACTERS!)
+    comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True, editable=False)
     parent = models.ForeignKey('self', on_delete=models.CASCADE,
         related_name="replies", null=True, blank=True
