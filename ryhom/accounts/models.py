@@ -1,17 +1,16 @@
 import itertools
 import uuid
-from io import BytesIO
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.core.files import File
-from django.core.files.base import ContentFile
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from PIL import Image
+from ryhom.core.utils import resize_optimize_image
 
 from .managers import AccountManager
 
+allowed_file_extensions = ['jpg', 'png', 'jpeg']
 
 class Account(AbstractBaseUser, PermissionsMixin):
     """
@@ -48,7 +47,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
     birthday = models.DateField(null=True, blank=True)
     bio = models.CharField(max_length=160, blank=True, default='')
     profile_image = models.ImageField(blank=True,
-        upload_to='accounts/profile-images/')
+        upload_to='accounts/profile-images/',
+        validators=[FileExtensionValidator(allowed_file_extensions)]
+    )
     website = models.URLField(blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
@@ -72,21 +73,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__original_profile_image = self.profile_image
-
-
-    def _resize_profile_image(self, imageField: models.ImageField, size:tuple):
-        img = Image.open(imageField)  # Catch original
-        source_image = img.convert('RGB')
-        source_image.thumbnail(size)  # Resize to size
-        output = BytesIO()
-        source_image.save(output, format='JPEG') # Save resize image to bytes
-        output.seek(0)
-
-        content_file = ContentFile(output.read())  # Read output and create ContentFile in memory
-        file = File(content_file)
-
-        random_name = f'{uuid.uuid4()}.jpeg'
-        imageField.save(random_name, file, save=False)
 
 
     def _create_slug(self):
@@ -135,7 +121,11 @@ class Account(AbstractBaseUser, PermissionsMixin):
         #     img.save(self.image.path)
         if self.profile_image != self.__original_profile_image:
             if self.profile_image != '':
-                self._resize_profile_image(self.profile_image, (500, 500)) # (width, height)
+                self.profile_image = resize_optimize_image(
+                                        self.profile_image,
+                                        desired_width=500,
+                                        desired_height=500
+                                    )
         self.__original_profile_image = self.profile_image
         super(Account, self).save(*args, **kwargs)
 
