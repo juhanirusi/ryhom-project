@@ -12,6 +12,7 @@ from django.contrib.auth.views import (LoginView, LogoutView,
                                        PasswordResetConfirmView,
                                        PasswordResetDoneView,
                                        PasswordResetView)
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -211,18 +212,48 @@ class UserProfileView(DetailView):
 
 class UserPostsView(LoginRequiredMixin, ListView):
     template_name = 'accounts/user-posts.html'
-    context_object_name = 'published_articles'
     model = Article
-
-    def get_queryset(self):
-        return Article.articles.by_author(self.request.user).published_articles()
 
     def get_context_data(self, **kwargs):
         context = super(UserPostsView, self).get_context_data(**kwargs)
+
+        published_articles = Article.articles.by_author(self.request.user).published_articles()
+        saved_articles = Article.articles.draft_articles()
+        published_microposts = Micropost.objects.filter(author=self.request.user)
+
+        paginator = Paginator(published_articles, 2)
+        page = self.request.GET.get('published-articles-page')
+        try:
+            published_articles = paginator.page(page)
+        except PageNotAnInteger:
+            published_articles = paginator.page(1)
+        except EmptyPage:
+            published_articles = paginator.page(paginator.num_pages)
+
+        paginator = Paginator(saved_articles, 2)
+        page = self.request.GET.get('saved-articles-page')
+        try:
+            saved_articles = paginator.page(page)
+        except PageNotAnInteger:
+            saved_articles = paginator.page(1)
+        except EmptyPage:
+            saved_articles = paginator.page(paginator.num_pages)
+
+        paginator = Paginator(published_microposts, 2)
+        page = self.request.GET.get('published-microposts-page')
+        try:
+            published_microposts = paginator.page(page)
+        except PageNotAnInteger:
+            published_microposts = paginator.page(1)
+        except EmptyPage:
+            published_microposts = paginator.page(paginator.num_pages)
+
         context.update({
-            'saved_articles': Article.articles.draft_articles(),
-            'published_microposts': Micropost.objects.filter(author=self.request.user),
+            'published_articles': published_articles,
+            'saved_articles': saved_articles,
+            'published_microposts': published_microposts
         })
+
         return context
 
 
