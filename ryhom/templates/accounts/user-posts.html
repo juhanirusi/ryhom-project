@@ -21,6 +21,30 @@
     </li>
   {% endfor %}
 
+
+
+  <!-- Published Articles Pagination-->
+    <div>
+      <span>
+          {% if published_articles.has_previous %}
+              <a href="?published-articles-page=1">&laquo; first</a>
+              <a href="?published-articles-page={{ published_articles.previous_page_number }}">previous</a>
+          {% endif %}
+
+          <span>
+              Page {{ published_articles.number }} of {{ published_articles.paginator.num_pages }}.
+          </span>
+
+          {% if published_articles.has_next %}
+              <a href="?published-articles-page={{ published_articles.next_page_number }}">next</a>
+              <a href="?published-articles-page={{ published_articles.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+      </span>
+    </div>
+  <!-- End Of Published Articles Pagination -->
+
+
+
   <h2>Your Draft Articles</h2>
   {% for article in saved_articles %}
     <li>
@@ -29,6 +53,30 @@
     </li>
   {% endfor %}
 
+
+
+  <!-- Saved Articles Pagination-->
+    <div>
+      <span>
+        {% if saved_articles.has_previous %}
+          <a href="?saved-articles-page=1">&laquo; first</a>
+          <a href="?saved-articles-page={{ saved_articles.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span>
+          Page {{ saved_articles.number }} of {{ saved_articles.paginator.num_pages }}.
+        </span>
+
+        {% if saved_articles.has_next %}
+          <a href="?saved-articles-page={{ saved_articles.next_page_number }}">next</a>
+          <a href="?saved-articles-page={{ saved_articles.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  <!-- End Of Saved Articles Pagination -->
+
+
+
   <h2>Published Microposts</h2>
   {% for micropost in published_microposts %}
     <li>
@@ -36,5 +84,27 @@
       <a href="{% url 'microposts:delete_post' micropost_uuid=micropost.uuid %}">Delete This Micropost</a>
     </li>
   {% endfor %}
+
+
+
+  <!-- Published Microposts Pagination-->
+    <div>
+      <span>
+        {% if published_microposts.has_previous %}
+          <a href="?published-microposts-page=1">&laquo; first</a>
+          <a href="?published-microposts-page={{ published_microposts.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span>
+          Page {{ published_microposts.number }} of {{ published_microposts.paginator.num_pages }}.
+        </span>
+
+        {% if published_microposts.has_next %}
+          <a href="?published-microposts-page={{ published_microposts.next_page_number }}">next</a>
+          <a href="?published-microposts-page={{ published_microposts.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  <!-- End Of Published Microposts Pagination -->
 
   {% endblock content %}
