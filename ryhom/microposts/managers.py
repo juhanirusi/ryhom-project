@@ -18,3 +18,17 @@ class MicropostManager(models.Manager):
 
     def published_microposts(self):
         return self.get_queryset().published_microposts()
+
+# -------------------------------------------------------------------
+
+class MicropostCommentsQuerySet(models.QuerySet):
+    def user_comments(self, author):
+        return self.filter(author=author)
+
+
+class MicropostCommentsManager(models.Manager):
+    def get_queryset(self):
+        return MicropostCommentsQuerySet(self.model, using=self._db)
+
+    def user_comments(self, author):
+        return self.get_queryset().user_comments(author)
