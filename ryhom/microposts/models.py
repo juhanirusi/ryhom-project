@@ -5,7 +5,7 @@ from ryhom.core.models import BaseAbstractModel, BaseCommentModel
 from ryhom.core.utils import random_string_generator
 from ryhom.tags.models import Tag
 
-from .managers import MicropostManager
+from .managers import MicropostCommentsManager, MicropostManager
 
 
 class Micropost(BaseAbstractModel):
@@ -58,7 +58,7 @@ class MicropostComment(BaseCommentModel):
     post = models.ForeignKey(Micropost, on_delete=models.CASCADE)
 
     objects = models.Manager()
-    #user_comments = UserCommentsManager()
+    micropost_comments = MicropostCommentsManager()
 
     class Meta:
         verbose_name = 'Comment'
