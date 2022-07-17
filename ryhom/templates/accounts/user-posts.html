@@ -13,98 +13,123 @@
     {% endfor %}
   {% endif %}
 
+  <!-- Articles Published By Requesting User -->
   <h2>Published Articles</h2>
-  {% for article in published_articles %}
-    <li>
-      <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
-      <a href="{% url 'articles:delete_article' article_uuid=article.uuid %}">Delete This Article</a>
-    </li>
-  {% endfor %}
+  {% if published_articles %}
+    {% for article in published_articles %}
+      <li>
+        <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
+        <a href="{% url 'articles:delete_article' article_uuid=article.uuid %}">Delete This Article</a>
+      </li>
+    {% endfor %}
+    <!-- End Of Articles Published By Requesting User -->
 
-
-
-  <!-- Published Articles Pagination-->
-    <div>
-      <span>
+    <!-- Articles Pagination -->
+    {% if published_articles_amount > 10 %}
+      <div>
+        <span>
           {% if published_articles.has_previous %}
-              <a href="?published-articles-page=1">&laquo; first</a>
-              <a href="?published-articles-page={{ published_articles.previous_page_number }}">previous</a>
+            <a href="?published-articles-page=1">&laquo; first</a>
+            <a href="?published-articles-page={{ published_articles.previous_page_number }}">previous</a>
           {% endif %}
 
           <span>
-              Page {{ published_articles.number }} of {{ published_articles.paginator.num_pages }}.
+            Page {{ published_articles.number }} of {{ published_articles.paginator.num_pages }}.
           </span>
 
           {% if published_articles.has_next %}
-              <a href="?published-articles-page={{ published_articles.next_page_number }}">next</a>
-              <a href="?published-articles-page={{ published_articles.paginator.num_pages }}">last &raquo;</a>
+            <a href="?published-articles-page={{ published_articles.next_page_number }}">next</a>
+            <a href="?published-articles-page={{ published_articles.paginator.num_pages }}">last &raquo;</a>
           {% endif %}
-      </span>
-    </div>
+        </span>
+      </div>
+    {% endif %}
+  {% else %}
+    <p>You currently don't have any published posts.</p>
+    <a href="{% url 'articles:add_article' %}">Write your first article</a>
+  {% endif %}
   <!-- End Of Published Articles Pagination -->
 
 
-
+  <!-- Articles Saved By Requesting User -->
   <h2>Your Draft Articles</h2>
-  {% for article in saved_articles %}
-    <li>
-      <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
-      <a href="{% url 'articles:delete_article' article_uuid=article.uuid %}">Delete This Article</a>
-    </li>
-  {% endfor %}
+  {% if saved_articles %}
+    {% for article in saved_articles %}
+      <li>
+        <a href="{% url 'articles:edit_article' article_uuid=article.uuid %}">{{ article.title }}</a>
+        <a href="{% url 'articles:delete_article' article_uuid=article.uuid %}">Delete This Article</a>
+      </li>
+    {% endfor %}
+    <!-- End Of Articles Saved By Requesting User -->
 
 
-
-  <!-- Saved Articles Pagination-->
-    <div>
-      <span>
-        {% if saved_articles.has_previous %}
-          <a href="?saved-articles-page=1">&laquo; first</a>
-          <a href="?saved-articles-page={{ saved_articles.previous_page_number }}">previous</a>
-        {% endif %}
-
+    <!-- Saved Articles Pagination-->
+    {% if saved_articles_amount > 10 %}
+      <div>
         <span>
-          Page {{ saved_articles.number }} of {{ saved_articles.paginator.num_pages }}.
-        </span>
+          {% if saved_articles.has_previous %}
+            <a href="?saved-articles-page=1">&laquo; first</a>
+            <a href="?saved-articles-page={{ saved_articles.previous_page_number }}">previous</a>
+          {% endif %}
 
-        {% if saved_articles.has_next %}
-          <a href="?saved-articles-page={{ saved_articles.next_page_number }}">next</a>
-          <a href="?saved-articles-page={{ saved_articles.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-      </span>
-    </div>
+          <span>
+            Page {{ saved_articles.number }} of {{ saved_articles.paginator.num_pages }}.
+          </span>
+
+          {% if saved_articles.has_next %}
+            <a href="?saved-articles-page={{ saved_articles.next_page_number }}">next</a>
+            <a href="?saved-articles-page={{ saved_articles.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    {% endif %}
+  {% else %}
+    <p>You currently don't have any drafts.</p>
+    <a href="{% url 'articles:add_article' %}">Write an article</a>
+  {% endif %}
   <!-- End Of Saved Articles Pagination -->
 
 
 
+
+
+  <!-- Microposts Published By Requesting User -->
   <h2>Published Microposts</h2>
-  {% for micropost in published_microposts %}
-    <li>
-      {{ micropost.title }}
-      <a href="{% url 'microposts:delete_post' micropost_uuid=micropost.uuid %}">Delete This Micropost</a>
-    </li>
-  {% endfor %}
+  {% if published_microposts %}
+    {% for micropost in published_microposts %}
+      <li>
+        {{ micropost.title }}
+        <a href="{% url 'microposts:delete_post' micropost_uuid=micropost.uuid %}">Delete This Micropost</a>
+      </li>
+    {% endfor %}
+    <!-- End Of Microposts Published By Requesting User -->
 
 
 
-  <!-- Published Microposts Pagination-->
-    <div>
-      <span>
-        {% if published_microposts.has_previous %}
-          <a href="?published-microposts-page=1">&laquo; first</a>
-          <a href="?published-microposts-page={{ published_microposts.previous_page_number }}">previous</a>
-        {% endif %}
-
+    <!-- Published Microposts Pagination-->
+    {% if published_microposts_amount > 10 %}
+      <div>
         <span>
-          Page {{ published_microposts.number }} of {{ published_microposts.paginator.num_pages }}.
-        </span>
+          {% if published_microposts.has_previous %}
+            <a href="?published-microposts-page=1">&laquo; first</a>
+            <a href="?published-microposts-page={{ published_microposts.previous_page_number }}">previous</a>
+          {% endif %}
 
-        {% if published_microposts.has_next %}
-          <a href="?published-microposts-page={{ published_microposts.next_page_number }}">next</a>
-          <a href="?published-microposts-page={{ published_microposts.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-      </span>
-    </div>
+          <span>
+            Page {{ published_microposts.number }} of {{ published_microposts.paginator.num_pages }}.
+          </span>
+
+          {% if published_microposts.has_next %}
+            <a href="?published-microposts-page={{ published_microposts.next_page_number }}">next</a>
+            <a href="?published-microposts-page={{ published_microposts.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    {% endif %}
+  {% else %}
+    <p>You haven't published any microposts yet!</p>
+    <a href="{% url 'microposts:add_micropost' %}">Make a micropost</a>
+  {% endif %}
   <!-- End Of Published Microposts Pagination -->
 
   {% endblock content %}
