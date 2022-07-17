@@ -1,4 +1,6 @@
 import socket
+from itertools import chain
+from operator import attrgetter
 from smtplib import SMTPException
 
 from django.conf import settings
@@ -23,7 +25,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from ryhom.articles.models import Article, ArticleComment
 from ryhom.core.decorators import confirm_password
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
-from ryhom.microposts.models import Micropost
+from ryhom.microposts.models import Micropost, MicropostComment
 
 from .forms import (AccountSettingsForm, ChangeEmailForm, ChangePasswordForm,
                     ForgotPasswordForm, LoginForm, RegisterForm,
@@ -200,11 +202,48 @@ class UserProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        user_articles = Article.articles.by_author(self.user).published_articles()[:10]
-        user_microposts = Micropost.microposts.by_author(self.user).published_microposts()[:10]
-        user_comments = ArticleComment.article_comments.user_comments(self.user)[:10]
+        user_articles = Article.articles.by_author(self.user).published_articles()
+        user_articles_amount = user_articles.count()
+
+        user_microposts = Micropost.microposts.by_author(self.user).published_microposts()
+        user_microposts_amount = user_microposts.count()
+
+        user_article_comments = ArticleComment.article_comments.user_comments(self.user)
+        user_micropost_comments = MicropostComment.micropost_comments.user_comments(self.user)
+
+        # Let's combine all user comment querysets into one
+        # collection of objects --> (WE CAN CHAIN EVEN MORE IF WE WANT TO!)
+        # and order them by their creation date + let's show newest comments
+        # first with reverse=True
+        user_comments = sorted(
+            chain(user_article_comments, user_micropost_comments),
+            key=attrgetter('created'), reverse=True
+        )
+
+        paginator = Paginator(user_articles, 10)
+        page = self.request.GET.get('user-articles-page')
+        try:
+            user_articles = paginator.page(page)
+        except PageNotAnInteger:
+            user_articles = paginator.page(1)
+        except EmptyPage:
+            user_articles = paginator.page(paginator.num_pages)
+
+        paginator = Paginator(user_microposts, 10)
+        page = self.request.GET.get('user-microposts-page')
+        try:
+            user_microposts = paginator.page(page)
+        except PageNotAnInteger:
+            user_microposts = paginator.page(1)
+        except EmptyPage:
+            user_microposts = paginator.page(paginator.num_pages)
+
         context['user_articles'] = user_articles
+        context['user_articles_amount'] = user_articles_amount
+
         context['user_microposts'] = user_microposts
+        context['user_microposts_amount'] = user_microposts_amount
+
         context['user_comments'] = user_comments
 
         return context
@@ -218,10 +257,15 @@ class UserPostsView(LoginRequiredMixin, ListView):
         context = super(UserPostsView, self).get_context_data(**kwargs)
 
         published_articles = Article.articles.by_author(self.request.user).published_articles()
-        saved_articles = Article.articles.draft_articles()
-        published_microposts = Micropost.objects.filter(author=self.request.user)
+        published_articles_amount = published_articles.count()
 
-        paginator = Paginator(published_articles, 2)
+        saved_articles = Article.articles.by_author(self.request.user).draft_articles()
+        saved_articles_amount = saved_articles.count()
+
+        published_microposts = Micropost.microposts.by_author(self.request.user).published_microposts()
+        published_microposts_amount = published_microposts.count()
+
+        paginator = Paginator(published_articles, 10)
         page = self.request.GET.get('published-articles-page')
         try:
             published_articles = paginator.page(page)
@@ -230,7 +274,7 @@ class UserPostsView(LoginRequiredMixin, ListView):
         except EmptyPage:
             published_articles = paginator.page(paginator.num_pages)
 
-        paginator = Paginator(saved_articles, 2)
+        paginator = Paginator(saved_articles, 10)
         page = self.request.GET.get('saved-articles-page')
         try:
             saved_articles = paginator.page(page)
@@ -239,7 +283,7 @@ class UserPostsView(LoginRequiredMixin, ListView):
         except EmptyPage:
             saved_articles = paginator.page(paginator.num_pages)
 
-        paginator = Paginator(published_microposts, 2)
+        paginator = Paginator(published_microposts, 10)
         page = self.request.GET.get('published-microposts-page')
         try:
             published_microposts = paginator.page(page)
@@ -250,8 +294,13 @@ class UserPostsView(LoginRequiredMixin, ListView):
 
         context.update({
             'published_articles': published_articles,
+            'published_articles_amount': published_articles_amount,
+
             'saved_articles': saved_articles,
-            'published_microposts': published_microposts
+            'saved_articles_amount': saved_articles_amount,
+
+            'published_microposts': published_microposts,
+            'published_microposts_amount': published_microposts_amount,
         })
 
         return context
