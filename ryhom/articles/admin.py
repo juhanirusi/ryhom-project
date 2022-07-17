@@ -14,6 +14,12 @@ def publish_article(modeladmin, request, queryset):
     messages.success(request, "Selected Articles(s) Are Now Published!")
 
 
+@admin.action(description='Set Article(s) As Draft')
+def save_article(modeladmin, request, queryset):
+    queryset.update(status = 'Saved For Later')
+    messages.success(request, "Selected Articles(s) Are Now Saved For Later!")
+
+
 @admin.action(description='Unpublish Article(s)')
 def unpublish_article(modeladmin, request, queryset):
     queryset.update(status = 'Wants To Publish')
@@ -41,6 +47,7 @@ class ArticleAdmin(admin.ModelAdmin):
     actions = [
         publish_article,
         unpublish_article,
+        save_article,
         set_as_featured,
         remove_featured_status
     ]
