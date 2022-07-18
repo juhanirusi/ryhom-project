@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView
+from django.views.generic import DetailView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import AddArticleCommentForm, AddEditArticleForm
@@ -132,47 +133,22 @@ class ArticleDetailView(DetailView):
             return redirect(self.request.path_info)
 
 
-# class AddCommentLike(LoginRequiredMixin, View):
-#     def post(self, request, post_pk, pk, *args, **kwargs):
-#         comment = Comment.objects.get(pk=pk)
-#         is_dislike = False
-#         for dislike in comment.dislikes.all():
-#             if dislike == request.user:
-#                 is_dislike = True
-#                 break
-#         if is_dislike:
-#             comment.dislikes.remove(request.user)
-#         is_like = False
-#         for like in comment.likes.all():
-#             if like == request.user:
-#                 is_like = True
-#                 break
-#         if not is_like:
-#             comment.likes.add(request.user)
+class AddRemoveCommentLike(LoginRequiredMixin, View):
+    def post(self, request, pk, *args, **kwargs):
+        comment = ArticleComment.objects.get(pk=pk)
 
-#         if is_like:
-#             comment.likes.remove(request.user)
-#         next = request.POST.get('next', '/')
-#         return HttpResponseRedirect(next)
-# class AddCommentDislike(LoginRequiredMixin, View):
-#     def post(self, request, post_pk, pk, *args, **kwargs):
-#         comment = Comment.objects.get(pk=pk)
-#         is_like = False
-#         for like in comment.likes.all():
-#             if like == request.user:
-#                 is_like = True
-#                 break
-#         if is_like:
-#             comment.likes.remove(request.user)
-#         is_dislike = False
-#         for dislike in comment.dislikes.all():
-#             if dislike == request.user:
-#                 is_dislike = True
-#                 break
-#         if not is_dislike:
-#             comment.dislikes.add(request.user)
+        is_like = False
 
-#         if is_dislike:
-#             comment.dislikes.remove(request.user)
-#         next = request.POST.get('next', '/')
-#         return HttpResponseRedirect(next)
+        for like in comment.likers.all():
+            if like == request.user:
+                is_like = True
+                break
+
+        if not is_like:
+            comment.likers.add(request.user)
+
+        if is_like:
+            comment.likers.remove(request.user)
+
+        next = request.POST.get('next', '/')
+        return HttpResponseRedirect(next)
