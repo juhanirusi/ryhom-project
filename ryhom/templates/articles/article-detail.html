@@ -50,13 +50,33 @@
   {% for comment in comments %}
     {% if comment.is_parent %}
     <p>{{ comment.created | timesince }}</p>
-    <h3>{{ comment.author }} : {{ comment.comment }}</h3>
-    <p>{{ comment.upvotes }}</p>
+    <h3>{{ comment.author }}</h3>
+    <p>{{ comment.comment }}</p>
+
+        <!-- PARENT COMMENT LIKES -->
+        <form method="POST" action="{% url 'articles:comment_like_unlike' article.pk comment.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button class="remove-default-btn" type="submit">
+            <i>{% if request.user in comment.likers.all %}Unlike{% else %}Like{% endif %}<span> {{ comment.likers.all.count }}</span></i>
+          </button>
+        </form>
+        <!-- PARENT COMMENT LIKES -->
 
     {% for replies in comment.child_comments %}
       <p>--{{ comment.created | timesince }}</p>
-      <h3>--{{ comment.author }} : {{ replies.comment }}</h3>
-      <p>--{{ comment.upvotes }}</p>
+      <h3>--{{ comment.author }}</h3>
+      <p>--{{ replies.comment }}</p>
+
+        <!-- CHILD COMMENT LIKES -->
+        <form method="POST" action="{% url 'articles:comment_like_unlike' article.pk replies.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button class="remove-default-btn" type="submit">
+            <i>{% if request.user in replies.likers.all %}Unlike{% else %}Like{% endif %}<span> {{ replies.likers.all.count }}</span></i>
+          </button>
+        </form>
+        <!-- CHILD COMMENT LIKES -->
     {% endfor %}
 
     {% if user.is_authenticated %}
