@@ -56,6 +56,9 @@ class Micropost(BaseAbstractModel):
 
 class MicropostComment(BaseCommentModel):
     post = models.ForeignKey(Micropost, on_delete=models.CASCADE)
+    likers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, blank=True, related_name='micropost_likes'
+    )
 
     objects = models.Manager()
     micropost_comments = MicropostCommentsManager()
