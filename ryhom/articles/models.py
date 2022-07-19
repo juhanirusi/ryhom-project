@@ -108,7 +108,9 @@ class Article(BaseAbstractModel):
 class ArticleComment(BaseCommentModel):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     likers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name='article_comments'
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name='article_comments_likes'
     )
 
     objects = models.Manager()
