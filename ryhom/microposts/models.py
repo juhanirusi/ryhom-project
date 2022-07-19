@@ -17,6 +17,11 @@ class Micropost(BaseAbstractModel):
     tags = models.ManyToManyField(Tag, blank=True)
     published = models.BooleanField(default=False)
     slug = models.SlugField(default='', blank=True, null=False, unique=True)
+    likers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name='micropost_likes'
+    )
 
     objects = models.Manager()
     microposts = MicropostManager()
@@ -57,7 +62,9 @@ class Micropost(BaseAbstractModel):
 class MicropostComment(BaseCommentModel):
     post = models.ForeignKey(Micropost, on_delete=models.CASCADE)
     likers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name='micropost_likes'
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name='micropost_comment_likes'
     )
 
     objects = models.Manager()
