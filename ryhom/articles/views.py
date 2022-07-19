@@ -133,7 +133,7 @@ class ArticleDetailView(DetailView):
             return redirect(self.request.path_info)
 
 
-class AddRemoveCommentLike(LoginRequiredMixin, View):
+class AddRemoveArticleCommentLike(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         comment = ArticleComment.objects.get(pk=pk)
 
