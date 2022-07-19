@@ -1,9 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import CreateView, DeleteView
 
 from .forms import AddMicropostCommentForm, AddMicropostForm
@@ -112,3 +113,45 @@ class MicropostDetailView(DetailView):
 
             new_comment.save()
             return redirect(self.request.path_info)
+
+
+class AddRemoveMicropostLike(LoginRequiredMixin, View):
+    def post(self, request, micropost_pk, *args, **kwargs):
+        micropost = Micropost.objects.get(pk=micropost_pk)
+
+        is_like = False
+
+        for like in micropost.likers.all():
+            if like == request.user:
+                is_like = True
+                break
+
+        if not is_like:
+            micropost.likers.add(request.user)
+
+        if is_like:
+            micropost.likers.remove(request.user)
+
+        next = request.POST.get('next', '/')
+        return HttpResponseRedirect(next)
+
+
+class AddRemoveMicropostCommentLike(LoginRequiredMixin, View):
+    def post(self, request, pk, *args, **kwargs):
+        comment = MicropostComment.objects.get(pk=pk)
+
+        is_like = False
+
+        for like in comment.likers.all():
+            if like == request.user:
+                is_like = True
+                break
+
+        if not is_like:
+            comment.likers.add(request.user)
+
+        if is_like:
+            comment.likers.remove(request.user)
+
+        next = request.POST.get('next', '/')
+        return HttpResponseRedirect(next)
