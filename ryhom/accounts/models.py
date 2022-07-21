@@ -10,7 +10,8 @@ from ryhom.core.utils import resize_optimize_image
 
 from .managers import AccountManager
 
-allowed_file_extensions = ['jpg', 'png', 'jpeg']
+ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
+DEFAULT_PROFILE_IMAGE = 'default-profile-image.jpg'
 
 class Account(AbstractBaseUser, PermissionsMixin):
     """
@@ -47,8 +48,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
     birthday = models.DateField(null=True, blank=True)
     bio = models.CharField(max_length=160, blank=True, default='')
     profile_image = models.ImageField(blank=True,
+        default=DEFAULT_PROFILE_IMAGE,
         upload_to='accounts/profile-images/',
-        validators=[FileExtensionValidator(allowed_file_extensions)]
+        validators=[FileExtensionValidator(ALLOWED_FILE_EXTENSIONS)]
     )
     website = models.URLField(blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -93,6 +95,12 @@ class Account(AbstractBaseUser, PermissionsMixin):
         self.slug = unique_slug
 
 
+    def _profile_image(self):
+        if self.profile_image:
+            return self.profile_image
+        return DEFAULT_PROFILE_IMAGE
+
+
     def save(self, *args, **kwargs):
         """Override save method to generate a URL slug & username"""
 
@@ -101,32 +109,16 @@ class Account(AbstractBaseUser, PermissionsMixin):
             if not self.username:
                 self.username = self.slug
 
-        # A BUZZFEED.COM LIKE RANDOM PROFILE IMAGE...
-
-        # IMAGES = [ <-- ADD TO THE TOP OF THE MODEL!
-        #     'profile1.jpg', 'profile2.jpg', 'profile3.jpg', 'profile4.jpg', 'profile5.jpg',
-        #     'profile6.jpg', 'profile7.jpg', 'profile8.jpg', 'profile9.jpg', 'profile10.jpg',
-        # ]
-        # if self.image == 'default.jpg': <-- MAKE A LIST OF IMAGES
-        #     self.image = random.choice(self.IMAGES)
-
-        # RESIZE THE IMAGE TO A SPECIFIC SIZE...
-
-        # super(Account, self).save(*args, **kwargs) <-- NOT SURE IF SHOULD CALL THIS BEFORE THE IMAGE CODE?!
-        # img = Image.open(self.image.path)
-
-        # if img.height > 300 or img.width > 300:
-        #     output_size = (300, 300)
-        #     img.thumbnail(output_size)
-        #     img.save(self.image.path)
-        if self.profile_image != self.__original_profile_image:
-            if self.profile_image != '':
+        self.profile_image = self._profile_image()
+        if self.profile_image != DEFAULT_PROFILE_IMAGE:
+            if self.profile_image != self.__original_profile_image:
                 self.profile_image = resize_optimize_image(
                                         self.profile_image,
                                         desired_width=500,
                                         desired_height=500
                                     )
-        self.__original_profile_image = self.profile_image
+            self.__original_profile_image = self.profile_image
+
         super(Account, self).save(*args, **kwargs)
 
 
