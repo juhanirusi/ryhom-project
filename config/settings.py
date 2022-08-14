@@ -240,8 +240,10 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'ryhom', 'static'),)
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'ryhom', 'staticfiles')
+# STATIC_ROOT is used in a production environment!
+#STATIC_ROOT = os.path.join(BASE_DIR, 'ryhom', 'staticfiles')
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'ryhom', 'media')
