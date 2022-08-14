@@ -57,9 +57,10 @@ class DeleteMicropostView(LoginRequiredMixin, DeleteView):
 
 
 class AllMicropostsListView(ListView):
+    model = Micropost
+    paginate_by = 2
     template_name = 'microposts/all-microposts.html'
     context_object_name = 'microposts'
-    model = Micropost
     ordering = '-created'
     # With annotate + Count, we can add the number of comments a
     # specific micropost has into the context data.
