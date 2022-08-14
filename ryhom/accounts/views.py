@@ -208,6 +208,7 @@ class UserProfileView(DetailView):
         user_microposts = Micropost.microposts.by_author(self.user).published_microposts()
         user_microposts_amount = user_microposts.count()
 
+        # Perhaps here we should also have [:10] after the query???
         user_article_comments = ArticleComment.article_comments.user_comments(self.user)
         user_micropost_comments = MicropostComment.micropost_comments.user_comments(self.user)
 
@@ -218,7 +219,7 @@ class UserProfileView(DetailView):
         user_comments = sorted(
             chain(user_article_comments, user_micropost_comments),
             key=attrgetter('created'), reverse=True
-        )
+        )[:10]
 
         paginator = Paginator(user_articles, 10)
         page = self.request.GET.get('user-articles-page')
