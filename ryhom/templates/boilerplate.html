@@ -25,10 +25,8 @@
       {% comment %}
       If these scripts in the same page as infinite scroll, paginator will show duplicate items
       {% endcomment %}
-      <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-      <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-      <script src="{% static 'js/infinite.min.js' %}"></script>
 
+      {% block page_specific_js %}{% endblock page_specific_js %}
       {% block javascript %}{% endblock javascript %}
     </body>
 
