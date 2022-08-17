@@ -5,8 +5,11 @@ class MicropostQuerySet(models.QuerySet):
     def by_author(self, author):
         return self.filter(author=author)
 
-    def published_microposts(self):
-        return self.filter(published=True).order_by('-created')
+    def published(self):
+        return self.filter(published=True)
+
+    def by_tag(self, tag):
+        return self.filter(tags=tag)
 
 
 class MicropostManager(models.Manager):
@@ -16,8 +19,8 @@ class MicropostManager(models.Manager):
     def by_author(self, author):
         return self.get_queryset().by_author(author)
 
-    def published_microposts(self):
-        return self.get_queryset().published_microposts()
+    def published(self):
+        return self.get_queryset().published()
 
 # -------------------------------------------------------------------
 

@@ -5,14 +5,20 @@ class ArticleQuerySet(models.QuerySet):
     def by_author(self, author):
         return self.filter(author=author)
 
-    def published_articles(self):
-        return self.filter(status='Published').order_by('-modified')
+    def published(self):
+        return self.filter(status='Published')
 
-    def draft_articles(self):
-        return self.filter(status='Saved For Later').order_by('-modified')
+    def by_category(self, category):
+        return self.filter(categories=category)
+
+    def by_tag(self, tag):
+        return self.filter(tags=tag)
+
+    def drafted(self):
+        return self.filter(status='Saved For Later')
 
     def waiting_review(self):
-        return self.filter(status='Wants To Publish').order_by('-modified')
+        return self.filter(status='Wants To Publish')
 
 
 class ArticleManager(models.Manager):
@@ -22,11 +28,17 @@ class ArticleManager(models.Manager):
     def by_author(self, author):
         return self.get_queryset().by_author(author)
 
-    def published_articles(self):
-        return self.get_queryset().published_articles()
+    def published(self):
+        return self.get_queryset().published()
 
-    def draft_articles(self):
-        return self.get_queryset().draft_articles()
+    def by_category(self, category):
+        return self.get_queryset().by_category(category)
+
+    def by_tag(self, tag):
+        return self.get_queryset().by_tag(tag)
+
+    def drafted(self):
+        return self.get_queryset().drafted()
 
     def waiting_review(self):
         return self.get_queryset().waiting_review()
