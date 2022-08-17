@@ -95,7 +95,7 @@ class DeleteArticleView(LoginRequiredMixin, DeleteView):
 class ArticleDetailView(DetailView):
     template_name = 'articles/article-detail.html'
     model = Article
-    queryset = Article.objects.filter(status='Published')
+    queryset = Article.articles.published()
 
     def get_object(self):
         self.article = get_object_or_404(self.queryset, slug=self.kwargs['article_slug'])
