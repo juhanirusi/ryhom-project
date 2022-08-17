@@ -1,15 +1,43 @@
 {% extends 'boilerplate.html' %}
+{% load static %}
+
+{% block page_specific_js %}
+  {% include 'includes/jquery-waypoints.html' %}
+{% endblock page_specific_js %}
 
 {% block title %}{{ tag.name }} - {{ request.META.HTTP_HOST }}{% endblock title %}
 {% block meta_description %}{{ tag.description | slice:':160' }}{% endblock meta_description %}
 
 {% block content %}
 
-  <h1>Articles In Tag {{ tag.name }}</h1>
+  <h1>Articles In Tag "{{ tag.name }}"</h1>
   <p>{{ tag.description }}</p>
 
-  {% for article in articles_in_tag %}
-    <p>{{ article.title }}</p>
-  {% endfor %}
+  <div class="container">
+    <div class="infinite-container">
+      {% for article in articles_in_tag %}
+        <div class="infinite-item">
+          <a href="{{ article.get_absolute_url }}">
+            {% if article.image.url != '' %}
+              <img src="{{ article.image.url }}" alt="{{ article.title }}" height="400"></img>
+            {% endif %}
+            <p>{{ article.title }}</p>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="loading" style="display: none;">
+      <p>Loading...</p>
+    </div>
+
+    {% if page_obj.has_next %}
+      <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}"></a>
+    {% endif %}
+  </div>
+
+{% block javascript %}
+  <script src="{% static 'js/infinite-scroll.js' %}"></script>
+{% endblock javascript %}
 
 {% endblock content %}
