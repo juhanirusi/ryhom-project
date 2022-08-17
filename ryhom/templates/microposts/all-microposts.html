@@ -1,53 +1,47 @@
 {% extends 'boilerplate.html' %}
 {% load static %}
 
+{% block page_specific_js %}
+  {% include 'includes/jquery-waypoints.html' %}
+{% endblock page_specific_js %}
+
 {% block title %}All Posts{% endblock title %}
 
 {% block content %}
 
   <h1>All Microposts</h1>
 
-<div class="container">
-  <div class="row infinite-container">
-    {% for micropost in microposts %}
-      <div class="infinite-item">
-      <a href="{{ micropost.get_absolute_url }}"><h2>{{ micropost.title }}</h2></a>
+  <div class="container">
+    <div class="row infinite-container">
+      {% for micropost in microposts %}
+        <div class="infinite-item">
+        <a href="{{ micropost.get_absolute_url }}"><h2>{{ micropost.title }}</h2></a>
 
-      {% if micropost.image.url != '' %}
-        <a href="{{ micropost.get_absolute_url }}"><img src="{{ micropost.image.url }}" alt="{{ micropost.title }}"></a>
-      {% endif %}
+        {% if micropost.image.url != '' %}
+          <a href="{{ micropost.get_absolute_url }}"><img src="{{ micropost.image.url }}" alt="{{ micropost.title }}"></a>
+        {% endif %}
 
-      <p>{{ micropost.content }}</p>
+        <p>{{ micropost.content }}</p>
 
-      <p><a href="{{ micropost.get_absolute_url }}">{{ micropost.comment_count}} {% if micropost.comment_count == 1 %}Comment{% else %}Comments{% endif %}</a></p>
-      {% for tag in micropost.tags.all %}
-        <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
+        <p><a href="{{ micropost.get_absolute_url }}">{{ micropost.comment_count}} {% if micropost.comment_count == 1 %}Comment{% else %}Comments{% endif %}</a></p>
+        {% for tag in micropost.tags.all %}
+          <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
+        {% endfor %}
+        </div>
       {% endfor %}
-      </div>
-    {% endfor %}
+    </div>
+
+    <div class="loading" style="display: none;">
+      <p>Loading...</p>
+    </div>
+
+    {% if page_obj.has_next %}
+      <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}"></a>
+    {% endif %}
   </div>
 
-  <div class="loading" style="display: none;">
-    <p>Loading...</p>
-  </div>
-
-  {% if page_obj.has_next %}
-    <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}"></a>
-  {% endif %}
-</div>
-
-{% block javascript %}
-  <script>
-    var infinite = new Waypoint.Infinite({
-      element: $('.infinite-container')[0],
-      onBeforePageLoad: function () {
-        $('.loading').show();
-      },
-      onAfterPageLoad: function ($items) {
-        $('.loading').hide();
-      }
-    });
-  </script>
-{% endblock javascript %}
+  {% block javascript %}
+    <script src="{% static 'js/infinite-scroll.js' %}"></script>
+  {% endblock javascript %}
 
 {% endblock content %}
