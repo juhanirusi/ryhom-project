@@ -202,10 +202,10 @@ class UserProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        user_articles = Article.articles.by_author(self.user).published_articles()
+        user_articles = Article.articles.by_author(self.user).published().order_by('-modified')
         user_articles_amount = user_articles.count()
 
-        user_microposts = Micropost.microposts.by_author(self.user).published_microposts()
+        user_microposts = Micropost.microposts.by_author(self.user).published().order_by('-created')
         user_microposts_amount = user_microposts.count()
 
         # Perhaps here we should also have [:10] after the query???
@@ -257,13 +257,13 @@ class UserPostsView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(UserPostsView, self).get_context_data(**kwargs)
 
-        published_articles = Article.articles.by_author(self.request.user).published_articles()
+        published_articles = Article.articles.by_author(self.request.user).published().order_by('-modified')
         published_articles_amount = published_articles.count()
 
-        saved_articles = Article.articles.by_author(self.request.user).draft_articles()
+        saved_articles = Article.articles.by_author(self.request.user).drafted().order_by('-modified')
         saved_articles_amount = saved_articles.count()
 
-        published_microposts = Micropost.microposts.by_author(self.request.user).published_microposts()
+        published_microposts = Micropost.microposts.by_author(self.request.user).published().order_by('-created')
         published_microposts_amount = published_microposts.count()
 
         paginator = Paginator(published_articles, 10)
