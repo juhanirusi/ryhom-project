@@ -1,6 +1,8 @@
 from django.contrib.auth.models import BaseUserManager
 
 
+# Because we're using "AbstractBaseUser" to create our "Account" model
+# we'll need to create custom code on how each user type is created
 class AccountManager(BaseUserManager):
 
     def create_user(self, name, email, password=None, **extra_fields):

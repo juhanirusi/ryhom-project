@@ -5,6 +5,8 @@ from django.db.models import Q
 User = get_user_model()
 
 
+# Our custom backend class that allows the user login into their
+# account either with their email or unique username
 class EmailUsernameAuthBackend(object):
     def authenticate(self, request, username=None, email=None, password=None):
         try:

@@ -4,17 +4,20 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import Account
 
+# Admin header customizations...
 admin.site.site_header = "Ryhom"
 admin.site.site_title  =  "Ryhom Admin"
 admin.site.index_title  =  "Ryhom Admin Dashboard"
 
 
+# Action for activating an account manually from the Django admin
 @admin.action(description='Activate Account(s)')
 def make_active(modeladmin, request, queryset):
     queryset.update(is_active = True)
     messages.success(request, "Selected Account(s) Marked As Active!")
 
 
+# Action for deactivating an account manually from the Django admin
 @admin.action(description='Deactivate Account(s)')
 def make_inactive(modeladmin, request, queryset):
     queryset.update(is_active = False)

@@ -101,7 +101,7 @@ MIDDLEWARE = [
 ]
 
 
-#-------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # 'django_debug_toolbar' --> CUSTOM SETTINGS TO MAKE IT SHOW UP...
 if DEBUG:
     MIDDLEWARE += [
@@ -122,9 +122,8 @@ if DEBUG:
         'INTERCEPT_REDIRECTS': False,
     }
 
-    mimetypes
     mimetypes.add_type("application/javascript", ".js", True)
-#-------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 
 ROOT_URLCONF = 'config.urls'
@@ -173,7 +172,7 @@ AUTHENTICATION_BACKENDS = [
     # Our custom authentication backend...
     'ryhom.accounts.backends.EmailUsernameAuthBackend',
 
-    # Fallback to default authentication backend if first fails...
+    # Fallback to default authentication backend if the first one fails...
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -220,7 +219,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-#---------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # TO CONFIGURE THE EMAIL BACKEND
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
@@ -233,7 +232,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 
 # Static files (CSS, JavaScript, Images)

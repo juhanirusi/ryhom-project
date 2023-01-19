@@ -6,6 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+
 from ryhom.core.views import Error404View
 
 urlpatterns = [
@@ -20,6 +21,8 @@ urlpatterns = [
 ]
 
 
+# Enable the use of Django admin if "IS_ADMIN_ENABLED" variable is set to true
+# If it's false, the Django admin login page shows a 404 page
 if settings.IS_ADMIN_ENABLED:
     urlpatterns.append(path('site/ryhom/admin/', admin.site.urls))
 

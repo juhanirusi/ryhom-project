@@ -6,10 +6,12 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+
 from ryhom.core.utils import resize_optimize_image
 
 from .managers import AccountManager
 
+# What image extensions the profile image field allows
 ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
 DEFAULT_PROFILE_IMAGE = 'default-profile-image.jpg'
 
@@ -31,7 +33,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
         NONBINARY = 'Non-binary', 'Non-binary/non-conforming'
         NO_RESPONSE = 'No response', 'Prefer not to respond'
 
-    # Our additional UUID field for public lookups.
+    # Our additional UUID field for public lookups. For example, API access
+    # We're still using a normal auto incrementing primary key
+    # for querying inside our program!
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
@@ -62,7 +66,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     # Let's change the email field to be the username field
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['name'] # The name field is required
 
     class Meta:
         #indexes = [models.Index(fields=['uuid', 'slug'])]
@@ -96,6 +100,10 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 
     def _profile_image(self):
+        """
+        Check if the user has uploaded a profile image of themselves,
+        if not, use the default profile image.
+        """
         if self.profile_image:
             return self.profile_image
         return DEFAULT_PROFILE_IMAGE

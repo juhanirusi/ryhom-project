@@ -6,6 +6,7 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+
 from ryhom.categories.models import Category
 from ryhom.core.models import BaseAbstractModel, BaseCommentModel
 from ryhom.tags.models import Tag
