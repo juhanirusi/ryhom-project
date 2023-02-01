@@ -22,6 +22,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import DetailView, FormView, ListView, View
 from django.views.generic.edit import CreateView, UpdateView
+
 from ryhom.articles.models import Article, ArticleComment
 from ryhom.core.decorators import confirm_password
 from ryhom.core.viewmixins import RedirectAuthenticatedUserMixin
@@ -196,20 +197,27 @@ class UserProfileView(DetailView):
     template_name = 'accounts/user-profile.html'
 
     def get_object(self):
-        self.user = get_object_or_404(Account, slug=self.kwargs['user_profile_slug'])
+        self.user = get_object_or_404(
+            Account, slug=self.kwargs['user_profile_slug']
+        )
         return self.user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        user_articles = Article.articles.by_author(self.user).published().order_by('-modified')
+        user_articles = Article.articles.by_author(
+            self.user).published().order_by('-modified')
+
         user_articles_amount = user_articles.count()
 
-        user_microposts = Micropost.microposts.by_author(self.user).published().order_by('-created')
+        user_microposts = Micropost.microposts.by_author(
+            self.user).published().order_by('-created')
+
         user_microposts_amount = user_microposts.count()
 
         # Perhaps here we should also have [:10] after the query???
         user_article_comments = ArticleComment.article_comments.user_comments(self.user)
+
         user_micropost_comments = MicropostComment.micropost_comments.user_comments(self.user)
 
         # Let's combine all user comment querysets into one
@@ -257,13 +265,19 @@ class UserPostsView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(UserPostsView, self).get_context_data(**kwargs)
 
-        published_articles = Article.articles.by_author(self.request.user).published().order_by('-modified')
+        published_articles = Article.articles.by_author(
+            self.request.user).published().order_by('-modified')
+
         published_articles_amount = published_articles.count()
 
-        saved_articles = Article.articles.by_author(self.request.user).drafted().order_by('-modified')
+        saved_articles = Article.articles.by_author(
+            self.request.user).drafted().order_by('-modified')
+
         saved_articles_amount = saved_articles.count()
 
-        published_microposts = Micropost.microposts.by_author(self.request.user).published().order_by('-created')
+        published_microposts = Micropost.microposts.by_author(
+            self.request.user).published().order_by('-created')
+
         published_microposts_amount = published_microposts.count()
 
         paginator = Paginator(published_articles, 10)
