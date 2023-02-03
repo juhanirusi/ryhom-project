@@ -2,6 +2,10 @@
 
 {% block title %}Delete {{ micropost.title }}{% endblock title %}
 
+{% block navbar %}
+  {% include 'navbar.html' %}
+{% endblock navbar %}
+
 {% block content %}
   <h1>Are You Sure You Want To Delete - {{ micropost.title }}</h1>
 

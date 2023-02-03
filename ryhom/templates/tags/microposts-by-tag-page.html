@@ -8,6 +8,10 @@
 {% block title %}{{ tag.name }} - {{ request.META.HTTP_HOST }}{% endblock title %}
 {% block meta_description %}{{ tag.description | slice:':160' }}{% endblock meta_description %}
 
+{% block navbar %}
+  {% include 'navbar.html' %}
+{% endblock navbar %}
+
 {% block content %}
 
   <h1>Microposts In Tag "{{ tag.name }}"</h1>

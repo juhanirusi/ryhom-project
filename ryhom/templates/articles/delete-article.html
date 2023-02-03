@@ -2,6 +2,10 @@
 
 {% block title %}Delete {{ article.title }}{% endblock title %}
 
+{% block navbar %}
+  {% include 'navbar.html' %}
+{% endblock navbar %}
+
 {% block content %}
   <h1>Are You Sure You Want To Delete - {{ article.title }}</h1>
 

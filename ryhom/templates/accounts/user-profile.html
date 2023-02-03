@@ -3,6 +3,10 @@
 {% block title %}{{ account.name }} On {{ request.META.HTTP_HOST }}{% endblock title %}
 {% block meta_description %}{{ account.bio | slice:':160' }}{% endblock meta_description %}
 
+{% block navbar %}
+  {% include 'navbar.html' %}
+{% endblock navbar %}
+
 {% block content %}
 
   {% if messages %}
@@ -96,7 +100,7 @@
   {% else %}
     {% if account.username == request.user.username %}
       <p>You haven't published any microposts yet!</p>
-      <a href="{% url 'articles:add_article' %}">Write your first micropost</a>
+      <a href="{% url 'microposts:add_micropost' %}">Write your first micropost</a>
     {% else %}
       <p>{{ account.name }} hasn't published any microposts yet.</p>
     {% endif %}

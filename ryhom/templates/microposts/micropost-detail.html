@@ -4,6 +4,10 @@
 {% block meta_description %}{{ micropost.title | slice:':160' }}{% endblock meta_description %}
 {% block meta_author %}{{ micropost.author }}{% endblock meta_author %}
 
+{% block navbar %}
+  {% include 'navbar.html' %}
+{% endblock navbar %}
+
 {% block content %}
 
   {% if micropost.author.profile_image.url != '' %}
