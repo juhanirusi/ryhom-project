@@ -7,23 +7,26 @@ from django.utils.text import slugify
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    icon = models.ImageField(blank=True, upload_to='category-icons/')
-    description = models.TextField(max_length=300, default='', blank=True)
-    slug = models.SlugField(unique=True, null=False, default='', blank=True)
+    icon = models.ImageField(blank=True, upload_to="category-icons/")
+    description = models.TextField(max_length=300, default="", blank=True)
+    slug = models.SlugField(unique=True, null=False, default="", blank=True)
     parent = models.ForeignKey(
-        'self',
+        "self",
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name='sub_categories',
+        related_name="sub_categories",
     )
 
     class Meta:
-        unique_together = ('slug', 'parent',)
-        #indexes = [models.Index(fields=['slug', 'parent'])]
-        verbose_name = 'Category'
-        verbose_name_plural = 'Categories'
-
+        db_table = "category"  # Good to define table name!
+        unique_together = (
+            "slug",
+            "parent",
+        )
+        # indexes = [models.Index(fields=['slug', 'parent'])]
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
 
     # CHECK OUT THE BOTTOM OF THIS FILE FOR MORE INFO!
     # @property
@@ -31,28 +34,24 @@ class Category(models.Model):
     #     return self.category_set.all().order_by("title") <-- RESEARCH MORE OR USE A MODEL MANAGER!
     #     return Category.objects.filter(parent=self).all()
 
-
     # @property
     # def is_parent_category(self):
     #     if self.parent is None:
     #         return True
     #     return False
 
-
     def _generate_slug(self):
         name = self.name
-        unique_slug = slug = slugify(name) # Same value to 2 variables
+        unique_slug = slug = slugify(name)  # Same value to 2 variables
 
         for num in itertools.count(1):
             if not Category.objects.filter(slug=unique_slug).exists():
                 break
-            unique_slug = '{}-{}'.format(slug, num)
+            unique_slug = "{}-{}".format(slug, num)
 
         self.slug = unique_slug
 
-
     def save(self, *args, **kwargs):
-
         if not self.pk:
             self._generate_slug()
 
@@ -61,10 +60,10 @@ class Category(models.Model):
 
         super().save(*args, **kwargs)
 
-
     def get_absolute_url(self):
-        return reverse('categories:category_detail', kwargs={'category_slug': self.slug})
-
+        return reverse(
+            "categories:category_detail", kwargs={"category_slug": self.slug}
+        )
 
     def __str__(self):
         full_path = [self.name]
@@ -73,10 +72,10 @@ class Category(models.Model):
             full_path.append(k.name)
             k = k.parent
 
-        return ' -> '.join(full_path[::-1])
+        return " -> ".join(full_path[::-1])
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 """
 views.py...
@@ -88,7 +87,7 @@ VERSION 1
 #     category_slugs = hierarchy.split('/')
 #     categories = []
 
-    # REPLACE WITH 'try/except' IF ALL OF THIS WORKS!
+# REPLACE WITH 'try/except' IF ALL OF THIS WORKS!
 
 #     for slug in category_slugs:
 #         if not categories:
@@ -123,4 +122,4 @@ VERSION 2 --> with breadcrumbs
 
 #     return render(request,"categories.html",{'post_set':parent.post_set.all(),'sub_categories':parent.children.all()})
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
